@@ -1,0 +1,14 @@
+// RUN: @calcc --verbose --ast --parse -e 256   | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc --verbose --ast --parse -e 9     | @filecheck %s --check-prefix=CHECK_B
+// RUN: @calcc --verbose --ast --parse -e -9    | @filecheck %s --check-prefix=CHECK_C
+// RUN: @calcc --verbose --ast --parse -e "- 9" | @filecheck %s --check-prefix=CHECK_C
+
+// CHECK_A: Consumed expected token 'Number' at position '0'
+// CHECK_A: AST: 256
+
+// CHECK_B: Consumed expected token 'Number' at position '0'
+// CHECK_B: AST: 9
+
+// CHECK_C: Consumed expected token 'Minus' at position '0'
+// CHECK_C: Consumed expected token 'Number' at position '1'
+// CHECK_C: AST: -9

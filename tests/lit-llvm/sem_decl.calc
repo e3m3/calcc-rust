@@ -1,0 +1,23 @@
+// RUN:     @calcc --verbose --sem -e "with: a,b: 2*a + b"      | @filecheck %s --check-prefix=CHECK_A
+// RUN:     @calcc --verbose --sem -e "with: a,b: b + 2*a"      | @filecheck %s --check-prefix=CHECK_B
+// RUN: not @calcc --verbose --sem -e "with: a: 2*a + b" 2>&1   | @filecheck %s --check-prefix=CHECK_C
+// RUN: not @calcc --verbose --sem -e "with: b: 2*a + b" 2>&1   | @filecheck %s --check-prefix=CHECK_D
+
+// CHECK_A: Added var 'a' to scope
+// CHECK_A: Added var 'b' to scope
+// CHECK_A: Found var 'a' in scope
+// CHECK_A: Found var 'b' in scope
+
+// CHECK_B: Added var 'a' to scope
+// CHECK_B: Added var 'b' to scope
+// CHECK_B: Found var 'b' in scope
+// CHECK_B: Found var 'a' in scope
+
+// CHECK_C: Added var 'a' to scope
+// CHECK_C: Found var 'a' in scope
+// CHECK_C: Found unbound var 'b' in scope
+// CHECK_C: AST failed DeclCheck semantics check
+
+// CHECK_D: Added var 'b' to scope
+// CHECK_D: Found unbound var 'a' in scope
+// CHECK_D: AST failed DeclCheck semantics check

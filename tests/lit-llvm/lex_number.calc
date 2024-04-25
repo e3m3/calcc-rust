@@ -1,0 +1,20 @@
+// RUN: @calcc --verbose --lex -e 256   | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc --verbose --lex -e 10002 | @filecheck %s --check-prefix=CHECK_B
+
+// CHECK_A: Processing input 'Expression:256'
+// CHECK_A: Read 3 bytes from buffer at line 0
+// CHECK_A: Found char '2' in line 0 at pos 0
+// CHECK_A: Found char '5' in line 0 at pos 1
+// CHECK_A: Found char '6' in line 0 at pos 2
+// CHECK_A: Lexed token 'Number:256'
+// CHECK_A: Lexed token 'Eoi:'
+
+// CHECK_B: Processing input 'Expression:10002'
+// CHECK_B: Read 5 bytes from buffer at line 0
+// CHECK_B: Found char '1' in line 0 at pos 0
+// CHECK_B: Found char '0' in line 0 at pos 1
+// CHECK_B: Found char '0' in line 0 at pos 2
+// CHECK_B: Found char '0' in line 0 at pos 3
+// CHECK_B: Found char '2' in line 0 at pos 4
+// CHECK_B: Lexed token 'Number:10002'
+// CHECK_B: Lexed token 'Eoi:'

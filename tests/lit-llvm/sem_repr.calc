@@ -1,0 +1,24 @@
+// RUN:     @calcc --verbose --sem -e "10"                          | @filecheck %s --check-prefix=CHECK_A
+// RUN:     @calcc --verbose --sem -e "9223372036854775807"         | @filecheck %s --check-prefix=CHECK_B
+// RUN:     @calcc --verbose --sem -e "-9223372036854775808"        | @filecheck %s --check-prefix=CHECK_C
+// RUN:     @calcc --verbose --sem -e "0x7FFFFFFFFFFFFFFF"          | @filecheck %s --check-prefix=CHECK_D
+// RUN: not @calcc --verbose --sem -e "0x8000000000000000" 2>&1     | @filecheck %s --check-prefix=CHECK_E
+// RUN: not @calcc --verbose --sem -e "9223372036854775808" 2>&1    | @filecheck %s --check-prefix=CHECK_F
+// RUN: not @calcc --verbose --sem -e "-9223372036854775809" 2>&1   | @filecheck %s --check-prefix=CHECK_G
+
+// CHECK_A: Number '10' passed repr check
+
+// CHECK_B: Number '9223372036854775807' passed repr check
+
+// CHECK_C: Number '-9223372036854775808' passed repr check
+
+// CHECK_D: Number '0x7FFFFFFFFFFFFFFF' passed repr check
+
+// CHECK_E: Number '0x8000000000000000' failed repr check: number too large to fit in target type
+// CHECK_E: AST failed ReprCheck semantics check
+
+// CHECK_F: Number '9223372036854775808' failed repr check: number too large to fit in target type
+// CHECK_F: AST failed ReprCheck semantics check
+
+// CHECK_G: Number '-9223372036854775809' failed repr check: number too small to fit in target type
+// CHECK_G: AST failed ReprCheck semantics check

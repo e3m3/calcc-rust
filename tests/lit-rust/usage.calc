@@ -1,0 +1,4 @@
+// RUN: @calcc -h
+// RUN: @calcc --help
+
+// CHECK: usage: calcc [OPTIONS] <INPUT>

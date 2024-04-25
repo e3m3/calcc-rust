@@ -1,0 +1,16 @@
+// RUN: @calcc --verbose --ast --parse -e a         | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc --verbose --ast --parse -e point     | @filecheck %s --check-prefix=CHECK_B
+// RUN: @calcc --verbose --ast --parse -e Zpos      | @filecheck %s --check-prefix=CHECK_C
+// RUN: @calcc --verbose --ast --parse -e __file__  | @filecheck %s --check-prefix=CHECK_D
+
+// CHECK_A: Consumed expected token 'Ident' at position '0'
+// CHECK_A: AST: Ident(a)
+
+// CHECK_B: Consumed expected token 'Ident' at position '0'
+// CHECK_B: AST: Ident(point)
+
+// CHECK_C: Consumed expected token 'Ident' at position '0'
+// CHECK_C: AST: Ident(Zpos)
+
+// CHECK_D: Consumed expected token 'Ident' at position '0'
+// CHECK_D: AST: Ident(__file__)
