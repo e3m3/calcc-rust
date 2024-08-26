@@ -23,7 +23,7 @@ calc : ("with" ":" ident ("," ident)* ":" )? expr ";"
 
 *   rust-2021
 
-*   llvm-17
+*   llvm-18
 
 *   python3-lit, FileCheck
 

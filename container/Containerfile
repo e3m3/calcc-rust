@@ -1,4 +1,4 @@
-FROM fedora:39
+FROM fedora:40
 
 LABEL maintainer="Giordano Salvador <73959795+e3m3@users.noreply.github.com>"
 USER root
