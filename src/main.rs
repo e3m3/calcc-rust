@@ -14,6 +14,7 @@ use std::io::stdin;
 
 mod ast;
 mod exit_code;
+mod irgen;
 mod lex;
 mod parse;
 mod options;
@@ -23,8 +24,11 @@ use ast::Ast;
 use ast::Expr;
 use exit_code::exit;
 use exit_code::ExitCode;
+use irgen::ModuleBundle;
+use irgen::IRGen;
 use lex::Lexer;
 use lex::Token;
+use options::OptLevel;
 use options::RunOptions;
 use parse::Parser;
 use sem::Semantics;
@@ -38,6 +42,8 @@ fn help(code: ExitCode) {
         "-e|--expr[=]<E>    Process expression E instead of INPUT file",
         "-h|--help          Print this list of command line options",
         "--lex              Exit after running the lexer",
+        "--llvmir           Exit after printing the llvmir",
+        "-O<0,1,2,3,g>      Set the optimization level",
         "--parse            Exit after running the parser",
         "--sem              Exit after running the semantics check",
         "-v|--verbose       Enable verbose output",
@@ -63,6 +69,21 @@ fn input_type_to_string(t: InputType) -> String {
     }
 }
 
+#[derive(Clone,Copy)]
+enum OutputType<'a> {
+    None,
+    Stdout,
+    File(&'a str),
+}
+
+fn output_type_to_string(t: OutputType) -> String {
+    match t {
+        OutputType::Stdout  => "Stdout".to_string(),
+        OutputType::File(f) => format!("File:{}", f),
+        OutputType::None    => "None".to_string(),
+    }
+}
+
 fn parse_args<'a>(args: &'a Vec<String>, input: &mut InputType<'a>, options: &mut RunOptions) {
     let _bin_name: &String = args.get(0).unwrap();
     let mut arg: &'a String;
@@ -78,6 +99,12 @@ fn parse_args<'a>(args: &'a Vec<String>, input: &mut InputType<'a>, options: &mu
             "-h"        => help(ExitCode::Ok),
             "--help"    => help(ExitCode::Ok),
             "--lex"     => options.lex_exit = true,
+            "--llvmir"  => options.print_ir = true,
+            "-O0"       => options.opt_level = OptLevel::O0,
+            "-O1"       => options.opt_level = OptLevel::O1,
+            "-O2"       => options.opt_level = OptLevel::O2,
+            "-O3"       => options.opt_level = OptLevel::O3,
+            "-Og"       => options.opt_level = OptLevel::Og,
             "--parse"   => options.parse_exit = true,
             "--sem"     => options.sem_exit = true,
             "-v"        => options.verbose = true,
@@ -183,6 +210,11 @@ fn main() -> ! {
 
     let sem_check: bool = Semantics::check_all(*ast, &options);
     assert!(sem_check);
+
+    let module_name = String::from("calcc");
+    let mut module_bundle = ModuleBundle::new(&module_name);
+    let irgen_status: bool = IRGen::gen(*ast, &mut module_bundle, &options);
+    assert!(irgen_status);
 
     exit(ExitCode::Ok);
 }

@@ -11,6 +11,7 @@ pub enum ExitCode {
     LexerError = 2,
     ParserError = 3,
     SemanticError = 4,
+    IRGenError = 5,
 }
 
 pub fn exit(code: ExitCode) -> ! {

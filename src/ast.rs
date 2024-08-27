@@ -1,11 +1,22 @@
 // Copyright 2024, Giordano Salvador
 // SPDX-License-Identifier: BSD-3-Clause
 
-use crate::sem;
-use sem::AstVisitor;
+extern crate llvm_sys as llvm;
+use llvm::prelude::LLVMValueRef;
+
+pub type GenResult = Result<LLVMValueRef, &'static str>;
+
+pub trait AstGenerator {
+    fn visit(&mut self, ast: &dyn Ast) -> GenResult;
+}
+
+pub trait AstVisitor {
+    fn visit(&mut self, ast: &dyn Ast) -> bool;
+}
 
 pub trait Ast {
     fn accept(&self, visitor: &mut dyn AstVisitor) -> bool;
+    fn accept_gen(&self, visitor: &mut dyn AstGenerator) -> GenResult;
     fn is_expr(&self) -> bool;
     fn get_expr(&self) -> &ExprKind;
     fn to_string(&self) -> String;
@@ -89,6 +100,10 @@ impl <'a> Expr<'a> {
 
 impl <'a> Ast for Expr<'a> {
     fn accept(&self, visitor: &mut dyn AstVisitor) -> bool {
+        visitor.visit(self)
+    }
+
+    fn accept_gen(&self, visitor: &mut dyn AstGenerator) -> GenResult {
         visitor.visit(self)
     }
 

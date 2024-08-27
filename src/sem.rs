@@ -9,6 +9,7 @@ use crate::exit_code;
 use crate::options;
 
 use ast::Ast;
+use ast::AstVisitor;
 use ast::Expr;
 use ast::ExprKind;
 use ast::Factor;
@@ -17,10 +18,6 @@ use ast::Vars;
 use exit_code::exit;
 use exit_code::ExitCode;
 use options::RunOptions;
-
-pub trait AstVisitor {
-    fn visit(&mut self, ast: &dyn Ast) -> bool;
-}
 
 pub struct Scope {
     vars: HashSet<String>, 
