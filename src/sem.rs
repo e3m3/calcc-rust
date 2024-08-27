@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 use std::collections::HashSet;
-use std::str::FromStr;
 
 use crate::ast;
 use crate::exit_code;
@@ -105,10 +104,6 @@ impl <'a> ReprCheck<'a> {
         ReprCheck{options: options}
     }
 
-    fn is_hex_number(text: &String) -> bool {
-        text.len() >= 2 && "0x" == &text[0..2]
-    }
-
     pub fn check_expr_undefined(&self) -> bool {
         false
     }
@@ -116,25 +111,14 @@ impl <'a> ReprCheck<'a> {
     pub fn check_expr_factor(&self, f: &Factor) -> bool {
         match f {
             Factor::Ident(_)        => true,
-            Factor::Number(text)    => {
-                let result = if Self::is_hex_number(text) {
-                    i64::from_str_radix(&text[2..], 16)
+            Factor::Number(n)       => {
+                let result: bool = *n <= std::i64::MAX && *n >= std::i64::MIN;
+                if self.options.verbose {
+                    println!("Number '{}' passed repr check", *n);
                 } else {
-                    i64::from_str(text.as_str())
-                };
-                match result {
-                    Ok(n)   => {
-                        let result: bool = n <= std::i64::MAX && n >= std::i64::MIN;
-                        if self.options.verbose {
-                            println!("Number '{}' passed repr check", text);
-                        }
-                        result
-                    }
-                    Err(e)  => {
-                        eprintln!("Number '{}' failed repr check: {}", text, e);
-                        false
-                    }
+                    eprintln!("Number '{}' failed repr check", *n);
                 }
+                result
             }
         }
     }

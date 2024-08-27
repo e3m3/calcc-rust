@@ -1,6 +1,8 @@
 // Copyright 2024, Giordano Salvador
 // SPDX-License-Identifier: BSD-3-Clause
 
+use std::str::FromStr;
+
 use crate::ast;
 use crate::exit_code;
 use crate::lex;
@@ -157,13 +159,34 @@ impl <'a> Parser<'a> {
         e_left
     }
 
+    fn is_hex_number(text: &String) -> bool {
+        text.len() >= 2 && "0x" == &text[0..2]
+    }
+
+    fn str_to_number(text: &String) -> i64 {
+        let (result, msg) = if Self::is_hex_number(text) {
+            (i64::from_str_radix(&text[2..], 16), "Failed to convert hexadecimal string")
+        } else {
+            (i64::from_str(text.as_str()), "Failed to convert decimal string")
+        };
+        match result {
+            Ok(n)   => n,
+            Err(e)  => {
+                eprintln!("Number '{}' failed parse: {}\n{}", text, e, msg);
+                exit(ExitCode::ParserError);
+            },
+        }
+    }
+
     fn parse_factor(&self, iter: &mut ParserIter) -> Box<Expr> {
         if self.consume(iter, TokenKind::Minus, false) {
             self.expect(iter, TokenKind::Number, false);
             let text = format!("-{}", self.get_prev_token(iter).text.clone());
-            Box::new(Expr::new_number(text))
+            let n = Self::str_to_number(&text);
+            Box::new(Expr::new_number(n))
         } else if self.consume(iter, TokenKind::Number, false) {
-            Box::new(Expr::new_number(self.get_prev_token(iter).text.clone()))
+            let n = Self::str_to_number(&self.get_prev_token(iter).text.clone());
+            Box::new(Expr::new_number(n))
         } else if self.consume(iter, TokenKind::Ident, false) {
             Box::new(Expr::new_ident(self.get_prev_token(iter).text.clone()))
         } else if self.consume(iter, TokenKind::ParenL, false) {

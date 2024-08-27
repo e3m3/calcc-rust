@@ -13,7 +13,6 @@ use std::collections::HashMap;
 use std::ffi::c_char;
 use std::ffi::c_ulonglong;
 use std::ptr;
-use std::str::FromStr;
 
 use crate::ast;
 use crate::exit_code;
@@ -171,14 +170,7 @@ impl <'a, 'b> IRGen<'a, 'b> {
                     )
                 }
             },
-            Factor::Number(text)    => {
-                let result = if Self::is_hex_number(text) {
-                    i64::from_str_radix(&text[2..], 16)
-                } else {
-                    i64::from_str(text.as_str())
-                };
-                self.get_constint(result.unwrap())
-            },
+            Factor::Number(n)    => self.get_constint(*n),
         };
         Ok(value)
     }

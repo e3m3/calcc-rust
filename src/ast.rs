@@ -25,13 +25,13 @@ pub trait Ast {
 #[derive(Clone)]
 pub enum Factor {
     Ident(String),
-    Number(String),
+    Number(i64),
 }
 
 pub fn factor_to_string(f: &Factor) -> String {
     match f {
         Factor::Ident(s)    => format!("Ident({})", s),
-        Factor::Number(s)   => s.clone(),
+        Factor::Number(n)   => format!("{}", n),
     }
 }
 
@@ -81,8 +81,8 @@ impl <'a> Expr<'a> {
         Expr{expr: expr}
     }
 
-    pub fn new_number(text: String) -> Self {
-        Expr::new(ExprKind::Factor(Factor::Number(text)))
+    pub fn new_number(n: i64) -> Self {
+        Expr::new(ExprKind::Factor(Factor::Number(n)))
     }
 
     pub fn new_ident(text: String) -> Self {
