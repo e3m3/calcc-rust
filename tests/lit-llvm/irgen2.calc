@@ -8,6 +8,6 @@
 // CHECK:       source_filename = "calcc"
 
 // CHECK-LABEL: define i64 @calcc_main() {
-// CHECK-LABEL:	entry:
-// CHECK:		  ret i64 4096
-// CHECK:		}
+// CHECK-LABEL: entry:
+// CHECK:         ret i64 4096
+// CHECK:       }

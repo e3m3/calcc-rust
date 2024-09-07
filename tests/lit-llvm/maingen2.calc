@@ -1,55 +1,55 @@
 // RUN: @calcc -O0 --llvmir -e "1024*32/8" | @filecheck %s
 // RUN: @calcc -O0 -S       -e "1024*32/8" | @filecheck %s
 
-// CHECK-LABEL:	; ModuleID = 'main'
-// CHECK:		source_filename = "main"
+// CHECK-LABEL: ; ModuleID = 'main'
+// CHECK:       source_filename = "main"
 
-// CHECK:		@stderr = external global ptr, align 8
-// CHECK:		@.str.argerr = private unnamed_addr constant [50 x i8] c"Invalid number of args to main. Expected %d args\0A\00", align 1
-// CHECK:		@.str.result = private unnamed_addr constant [25 x i8] c"calcc_main result: %lld\0A\00", align 1
-// CHECK:		@.str.usage = private unnamed_addr constant [29 x i8] c"<exe> [<arg0>, <arg1>, ...]\0A\00", align 1
+// CHECK:       @stderr = external global ptr, align 8
+// CHECK:       @.str.argerr = private unnamed_addr constant [50 x i8] c"Invalid number of args to main. Expected %d args\0A\00", align 1
+// CHECK:       @.str.result = private unnamed_addr constant [25 x i8] c"calcc_main result: %lld\0A\00", align 1
+// CHECK:       @.str.usage = private unnamed_addr constant [29 x i8] c"<exe> [<arg0>, <arg1>, ...]\0A\00", align 1
 
-// CHECK-LABEL:	declare i64 @atoll(ptr)
+// CHECK-LABEL: declare i64 @atoll(ptr)
 
-// CHECK-LABEL:	declare i32 @fprintf(ptr, ptr, ...)
+// CHECK-LABEL: declare i32 @fprintf(ptr, ptr, ...)
 
-// CHECK-LABEL:	declare i32 @printf(ptr, ...)
+// CHECK-LABEL: declare i32 @printf(ptr, ...)
 
-// CHECK-LABEL:	define i32 @main(i32 %0, ptr %1) {
+// CHECK-LABEL: define i32 @main(i32 %0, ptr %1) {
 
-// CHECK-LABEL:	entry:
-// CHECK:		  %vRet = alloca i32, align 4
-// CHECK:		  %vArgc = alloca i32, align 4
-// CHECK:		  %vArgv = alloca ptr, align 8
-// CHECK:		  %v0 = alloca i64, align 8
-// CHECK:		  store i32 0, ptr %vRet, align 4
-// CHECK:		  store i32 %0, ptr %vArgc, align 4
-// CHECK:		  store ptr %1, ptr %vArgv, align 8
-// CHECK:		  %v1 = load i32, ptr %vArgc, align 4
-// CHECK:		  %v2 = icmp ne i32 %v1, 1
-// CHECK:		  br i1 %v2, label %print_err, label %body
+// CHECK-LABEL: entry:
+// CHECK:         %vRet = alloca i32, align 4
+// CHECK:         %vArgc = alloca i32, align 4
+// CHECK:         %vArgv = alloca ptr, align 8
+// CHECK:         %v0 = alloca i64, align 8
+// CHECK:         store i32 0, ptr %vRet, align 4
+// CHECK:         store i32 %0, ptr %vArgc, align 4
+// CHECK:         store ptr %1, ptr %vArgv, align 8
+// CHECK:         %v1 = load i32, ptr %vArgc, align 4
+// CHECK:         %v2 = icmp ne i32 %v1, 1
+// CHECK:         br i1 %v2, label %print_err, label %body
 
-// CHECK-LABEL:	print_err:                                        ; preds = %entry
-// CHECK:		  %v3 = load ptr, ptr @stderr, align 8
-// CHECK:		  %v4 = call i32 (ptr, ptr, ...) @fprintf(ptr %v3, ptr @.str.argerr, i32 0)
-// CHECK:		  %v5 = call i32 (ptr, ptr, ...) @fprintf(ptr %v3, ptr @.str.usage)
-// CHECK:		  store i32 1, ptr %vRet, align 4
-// CHECK:		  br label %ret_label
+// CHECK-LABEL: print_err:                                        ; preds = %entry
+// CHECK:         %v3 = load ptr, ptr @stderr, align 8
+// CHECK:         %v4 = call i32 (ptr, ptr, ...) @fprintf(ptr %v3, ptr @.str.argerr, i32 0)
+// CHECK:         %v5 = call i32 (ptr, ptr, ...) @fprintf(ptr %v3, ptr @.str.usage)
+// CHECK:         store i32 1, ptr %vRet, align 4
+// CHECK:         br label %ret_label
 
-// CHECK-LABEL:	body:                                             ; preds = %entry
-// CHECK:		  %v6 = call i64 @calcc_main()
-// CHECK:		  store i64 %v6, ptr %v0, align 4
-// CHECK:		  %v7 = load i64, ptr %v0, align 4
-// CHECK:		  %v8 = call i32 (ptr, i64, ...) @printf(ptr @.str.result, i64 %v7)
-// CHECK:		  store i32 0, ptr %vRet, align 4
-// CHECK:		  br label %ret_label
+// CHECK-LABEL: body:                                             ; preds = %entry
+// CHECK:         %v6 = call i64 @calcc_main()
+// CHECK:         store i64 %v6, ptr %v0, align 4
+// CHECK:         %v7 = load i64, ptr %v0, align 4
+// CHECK:         %v8 = call i32 (ptr, i64, ...) @printf(ptr @.str.result, i64 %v7)
+// CHECK:         store i32 0, ptr %vRet, align 4
+// CHECK:         br label %ret_label
 
-// CHECK-LABEL:	ret_label:                                        ; preds = %body, %print_err
-// CHECK:		  %v9 = load i32, ptr %vRet, align 4
-// CHECK:		  ret i32 %v9
-// CHECK:		}
+// CHECK-LABEL: ret_label:                                        ; preds = %body, %print_err
+// CHECK:         %v9 = load i32, ptr %vRet, align 4
+// CHECK:         ret i32 %v9
+// CHECK:       }
 
 // CHECK-LABEL: define i64 @calcc_main() {
-// CHECK-LABEL:	entry:
-// CHECK:		  ret i64 4096
-// CHECK:		}
+// CHECK-LABEL: entry:
+// CHECK:         ret i64 4096
+// CHECK:       }

@@ -14,10 +14,10 @@ pub enum ExitCode {
     ModuleError = 5,
     IRGenError = 6,
     _MainGenError = 7,
-	VerifyError	= 8,
-	TargetError	= 9,
-	LinkError = 10,
-	WriteError = 11,
+    VerifyError = 8,
+    TargetError = 9,
+    LinkError = 10,
+    WriteError = 11,
 }
 
 pub fn exit(code: ExitCode) -> ! {

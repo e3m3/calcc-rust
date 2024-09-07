@@ -86,7 +86,7 @@ impl <'a, 'b> IRGen<'a, 'b> {
         let value = match f {
             Factor::Number(n)   => self.bundle.get_constint(self.bundle.t_i64, *n),
             Factor::Ident(name) => {
-				let n = ModuleBundle::value_name(name);
+                let n = ModuleBundle::value_name(name);
                 let alloca_value = self.bundle.get_value(&n);
                 let value_name = self.bundle.scope.next_value_name();
                 unsafe {
@@ -133,7 +133,7 @@ impl <'a, 'b> IRGen<'a, 'b> {
         let f = self.bundle.f.expect("Missing parent function");
         for (i, var) in vars.into_iter().enumerate() {
             unsafe {
-				let alloca_value = self.bundle.gen_alloca(var.as_str(), self.bundle.t_i64);
+                let alloca_value = self.bundle.gen_alloca(var.as_str(), self.bundle.t_i64);
                 let init_value = LLVMGetParam(f, i as c_uint);
                 let _store_value = LLVMBuildStore(self.bundle.builder, init_value, alloca_value);
             };

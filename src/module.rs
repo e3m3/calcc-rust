@@ -54,7 +54,7 @@ pub struct ModuleBundle<'a> {
     pub t_opaque:       LLVMTypeRef,
     pub f:              Option<LLVMValueRef>,
     pub f_sig:          Option<FunctionSignature>,
-	pub verbose:		bool,
+    pub verbose:        bool,
 }
 
 impl <'a> ModuleBundle<'a> {
@@ -75,7 +75,7 @@ impl <'a> ModuleBundle<'a> {
                 t_opaque: LLVMPointerTypeInContext(c, 0 as c_uint),
                 f: None,
                 f_sig: None,
-				verbose: verbose,
+                verbose: verbose,
             }
         };
         bundle
@@ -123,39 +123,39 @@ impl <'a> ModuleBundle<'a> {
         }
     }
 
-	/// Kludge! LLVMGetTypeName2 returned null pointers.
-	//pub fn from_type_name(&self, name: *const c_char) -> LLVMTypeRef {
-	//	let c_string = unsafe { CStr::from_ptr(name) };
-	//	let s = c_string.to_str().unwrap();
-	//	match s {
-	//		"i32"	=> self.t_i32,
-	//		"i64"	=> self.t_i64,
-	//		"ptr"	=> self.t_opaque,
-	//		_		=> {
-	//			eprintln!("Type conversion for '{}' unimplemented", s);
-	//			exit(ExitCode::ModuleError);
-	//		},
-	//	}
-	//}
+    /// Kludge! LLVMGetTypeName2 returned null pointers.
+    //pub fn from_type_name(&self, name: *const c_char) -> LLVMTypeRef {
+    //  let c_string = unsafe { CStr::from_ptr(name) };
+    //  let s = c_string.to_str().unwrap();
+    //  match s {
+    //      "i32"   => self.t_i32,
+    //      "i64"   => self.t_i64,
+    //      "ptr"   => self.t_opaque,
+    //      _       => {
+    //          eprintln!("Type conversion for '{}' unimplemented", s);
+    //          exit(ExitCode::ModuleError);
+    //      },
+    //  }
+    //}
 
-	/// Kludge! Workaround for verifier errors from unmatched module contexts for LLVMTypeRef.
-	//pub fn get_f_sig_from_context(&mut self, f_sig: &FunctionSignature) -> FunctionSignature {
-	//	let t_ret: LLVMTypeRef = unsafe {
-	//		let name: *mut c_char = LLVMPrintTypeToString(f_sig.t_ret);
-	//		self.from_type_name(name)
-	//	};
-	//	assert!(!t_ret.is_null());
-	//	let mut params: Vec<LLVMTypeRef> = Vec::new();
-	//	for param in &f_sig.params {
-	//		let t: LLVMTypeRef = unsafe {
-	//			let name: *mut c_char = LLVMPrintTypeToString(*param);
-	//			self.from_type_name(name)
-	//		};
-	//		assert!(!t.is_null());
-	//		params.push(t);
-	//	}
-	//	FunctionSignature::new(t_ret, params)
-	//}
+    /// Kludge! Workaround for verifier errors from unmatched module contexts for LLVMTypeRef.
+    //pub fn get_f_sig_from_context(&mut self, f_sig: &FunctionSignature) -> FunctionSignature {
+    //  let t_ret: LLVMTypeRef = unsafe {
+    //      let name: *mut c_char = LLVMPrintTypeToString(f_sig.t_ret);
+    //      self.from_type_name(name)
+    //  };
+    //  assert!(!t_ret.is_null());
+    //  let mut params: Vec<LLVMTypeRef> = Vec::new();
+    //  for param in &f_sig.params {
+    //      let t: LLVMTypeRef = unsafe {
+    //          let name: *mut c_char = LLVMPrintTypeToString(*param);
+    //          self.from_type_name(name)
+    //      };
+    //      assert!(!t.is_null());
+    //      params.push(t);
+    //  }
+    //  FunctionSignature::new(t_ret, params)
+    //}
 
     pub fn get_value(&mut self, name: &String) -> LLVMValueRef {
         self.scope.get_value(name, self.verbose)
@@ -169,60 +169,60 @@ impl <'a> ModuleBundle<'a> {
         }
     }
 
-	pub fn link_into(&mut self, other: &mut ModuleBundle) -> bool {
-		let result: LLVMBool = unsafe { LLVMLinkModules2 (
-			self.module,
-			other.module,
-		)};
-		result == false as LLVMBool
-	}
+    pub fn link_into(&mut self, other: &mut ModuleBundle) -> bool {
+        let result: LLVMBool = unsafe { LLVMLinkModules2 (
+            self.module,
+            other.module,
+        )};
+        result == false as LLVMBool
+    }
 
-	pub fn to_string(&self) -> String {
-		let c_string_ptr: *mut c_char = unsafe {
-			LLVMPrintModuleToString(self.module)
-		};
-		let c_string: &CStr = unsafe {
-			CStr::from_ptr(c_string_ptr)
-		};
-		let string: String = String::from(c_string.to_str().unwrap());
-		unsafe {
-			LLVMDisposeMessage(c_string_ptr)
-		};
-		string
-	}
+    pub fn to_string(&self) -> String {
+        let c_string_ptr: *mut c_char = unsafe {
+            LLVMPrintModuleToString(self.module)
+        };
+        let c_string: &CStr = unsafe {
+            CStr::from_ptr(c_string_ptr)
+        };
+        let string: String = String::from(c_string.to_str().unwrap());
+        unsafe {
+            LLVMDisposeMessage(c_string_ptr)
+        };
+        string
+    }
 
     pub fn value_name(s: &str) -> String {
         String::from(s) + "\0"
     }
 
-	pub fn verify_module(&self) -> bool {
-		let mut error_ptr: *mut c_char = ptr::null_mut();
-		let result: LLVMBool = unsafe {
-			LLVMVerifyModule(
-				self.module,
-				LLVMVerifierFailureAction::LLVMReturnStatusAction,
-				&mut error_ptr as *mut *mut c_char,
-			)
-		};
-		unsafe {
-			let c_string = CStr::from_ptr(error_ptr as *const c_char);
-			let s = c_string.to_str().expect("Unable to read module verification error string");
-			if s.len() > 0 {
-				eprintln!("{}", s);
-			}
-			LLVMDisposeMessage(error_ptr);
-		}
-		result == false as LLVMBool
-	}
+    pub fn verify_module(&self) -> bool {
+        let mut error_ptr: *mut c_char = ptr::null_mut();
+        let result: LLVMBool = unsafe {
+            LLVMVerifyModule(
+                self.module,
+                LLVMVerifierFailureAction::LLVMReturnStatusAction,
+                &mut error_ptr as *mut *mut c_char,
+            )
+        };
+        unsafe {
+            let c_string = CStr::from_ptr(error_ptr as *const c_char);
+            let s = c_string.to_str().expect("Unable to read module verification error string");
+            if s.len() > 0 {
+                eprintln!("{}", s);
+            }
+            LLVMDisposeMessage(error_ptr);
+        }
+        result == false as LLVMBool
+    }
 
-	pub fn write_bitcode_to_file(&mut self, f: &str) -> () {
-		let name = String::from(f) + "\0";
-		let result: c_int = unsafe { LLVMWriteBitcodeToFile(self.module, name.as_ptr() as *const c_char) };
-		if result != 0 as c_int {
-			eprintln!("Failed to write module to file '{}'", name);
-			exit(ExitCode::WriteError);
-		}
-	}
+    pub fn write_bitcode_to_file(&mut self, f: &str) -> () {
+        let name = String::from(f) + "\0";
+        let result: c_int = unsafe { LLVMWriteBitcodeToFile(self.module, name.as_ptr() as *const c_char) };
+        if result != 0 as c_int {
+            eprintln!("Failed to write module to file '{}'", name);
+            exit(ExitCode::WriteError);
+        }
+    }
 }
 
 impl <'a> Drop for ModuleBundle<'a> {

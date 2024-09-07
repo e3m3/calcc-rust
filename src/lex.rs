@@ -241,9 +241,9 @@ impl <'a, T: Read> Lexer<'a, T> {
         c >= '0' && c <= '9'
     }
 
-	fn is_ident(c: char) -> bool {
-		Self::is_digit(c) || Self::is_letter(c)
-	}
+    fn is_ident(c: char) -> bool {
+        Self::is_digit(c) || Self::is_letter(c)
+    }
 
     fn is_hex_digit(c: char) -> bool {
         (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')

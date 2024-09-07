@@ -180,24 +180,24 @@ impl <'a> Parser<'a> {
 
     fn parse_factor(&self, iter: &mut ParserIter) -> Box<Expr> {
         if self.consume(iter, TokenKind::Minus, false) {
-			// NOTE: Implement unary minus as for identifiers as BinaryOp(Sub,0,..) and numbers as -<num>
-			if self.consume(iter, TokenKind::Number, false) {
-				let text = format!("-{}", self.get_prev_token(iter).text.clone());
-				let n = Self::str_to_number(&text);
-				Box::new(Expr::new_number(n))
-			} else if self.consume(iter, TokenKind::Ident, false) {
-				let zero = Box::new(Expr::new_number(0));
-				let ident = Box::new(Expr::new_ident(self.get_prev_token(iter).text.clone()));
-				Box::new(Expr::new_binop(Operator::Sub, Box::leak(zero), Box::leak(ident)))
-			} else if self.consume(iter, TokenKind::ParenL, false) {
-				let zero = Box::new(Expr::new_number(0));
-				let expr = self.parse_expr(iter);
-				self.expect(iter, TokenKind::ParenR, false);
-				Box::new(Expr::new_binop(Operator::Sub, Box::leak(zero), Box::leak(expr)))
-			} else {
-				eprintln!("Unexpected token after Token:Minus");
-				exit(ExitCode::ParserError);
-			}
+            // NOTE: Implement unary minus as for identifiers as BinaryOp(Sub,0,..) and numbers as -<num>
+            if self.consume(iter, TokenKind::Number, false) {
+                let text = format!("-{}", self.get_prev_token(iter).text.clone());
+                let n = Self::str_to_number(&text);
+                Box::new(Expr::new_number(n))
+            } else if self.consume(iter, TokenKind::Ident, false) {
+                let zero = Box::new(Expr::new_number(0));
+                let ident = Box::new(Expr::new_ident(self.get_prev_token(iter).text.clone()));
+                Box::new(Expr::new_binop(Operator::Sub, Box::leak(zero), Box::leak(ident)))
+            } else if self.consume(iter, TokenKind::ParenL, false) {
+                let zero = Box::new(Expr::new_number(0));
+                let expr = self.parse_expr(iter);
+                self.expect(iter, TokenKind::ParenR, false);
+                Box::new(Expr::new_binop(Operator::Sub, Box::leak(zero), Box::leak(expr)))
+            } else {
+                eprintln!("Unexpected token after Token:Minus");
+                exit(ExitCode::ParserError);
+            }
         } else if self.consume(iter, TokenKind::Number, false) {
             let n = Self::str_to_number(&self.get_prev_token(iter).text.clone());
             Box::new(Expr::new_number(n))

@@ -281,11 +281,11 @@ impl <'a, 'b> MainGen<'a, 'b> {
         let mut param_types: Vec<LLVMTypeRef> = vec![self.bundle.t_opaque, self.bundle.t_opaque];
         unsafe {
             let t_f = LLVMFunctionType(
-				self.bundle.t_i32,
-				param_types.as_mut_ptr(),
-				param_types.len() as u32,
-				true as LLVMBool
-			);
+                self.bundle.t_i32,
+                param_types.as_mut_ptr(),
+                param_types.len() as u32,
+                true as LLVMBool
+            );
             let _ = LLVMBuildCall2(
                 self.bundle.builder,
                 t_f,
@@ -344,11 +344,11 @@ impl <'a, 'b> MainGen<'a, 'b> {
         let mut param_types: Vec<LLVMTypeRef> = vec![self.bundle.t_opaque];
         unsafe {
             let t_f = LLVMFunctionType(
-				self.bundle.t_i64,
-				param_types.as_mut_ptr(),
-				param_types.len() as u32,
-				false as LLVMBool
-			);
+                self.bundle.t_i64,
+                param_types.as_mut_ptr(),
+                param_types.len() as u32,
+                false as LLVMBool
+            );
             let value_call_tmp = LLVMBuildCall2(
                 self.bundle.builder,
                 t_f,
@@ -386,7 +386,7 @@ impl <'a, 'b> MainGen<'a, 'b> {
                     name.as_ptr() as *const c_char
                 )
             };
-			args.push(value_load);
+            args.push(value_load);
         }
         let name_call_tmp = self.bundle.scope.next_value_name();
         unsafe {

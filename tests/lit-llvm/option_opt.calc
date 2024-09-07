@@ -5,20 +5,20 @@
 // CHECK_O0:        source_filename = "calcc"
 
 // CHECK_O0-LABEL:  define i64 @calcc_main(i64 %0) {
-// CHECK_O0-LABEL:	entry:
-// CHECK_O0:		  %a = alloca i64, align 8
-// CHECK_O0:		  store i64 %0, ptr %a, align 4
-// CHECK_O0:		  %v0 = load i64, ptr %a, align 4
-// CHECK_O0:		  %v1 = mul nsw i64 %v0, 32
-// CHECK_O0:		  ret i64 %v1
-// CHECK_O0:	    }
+// CHECK_O0-LABEL:  entry:
+// CHECK_O0:          %a = alloca i64, align 8
+// CHECK_O0:          store i64 %0, ptr %a, align 4
+// CHECK_O0:          %v0 = load i64, ptr %a, align 4
+// CHECK_O0:          %v1 = mul nsw i64 %v0, 32
+// CHECK_O0:          ret i64 %v1
+// CHECK_O0:        }
 
 // CHECK_O1-LABEL:  ; ModuleID = 'calcc'
 // CHECK_O1:        source_filename = "calcc"
 
 // CHECK_O1-LABEL:  define i64 @calcc_main(i64 %0) {{.*}} {
-// CHECK_O1-LABEL:	entry:
-// CHECK_O1:		  %v[[REG:[0-9]+]] = shl nsw i64 %0, 5
-// CHECK_O1:		  ret i64 %v[[REG]]
-// CHECK_O1:	    }
+// CHECK_O1-LABEL:  entry:
+// CHECK_O1:          %v[[REG:[0-9]+]] = shl nsw i64 %0, 5
+// CHECK_O1:          ret i64 %v[[REG]]
+// CHECK_O1:        }
 

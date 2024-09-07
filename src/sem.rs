@@ -32,7 +32,7 @@ impl Scope {
         if options.verbose && result {
             eprintln!("Added var '{}' to scope", *var);
         }
-		result
+        result
     }
 
     pub fn contains_var(&self, var: &String, options: &RunOptions) -> bool {
@@ -75,10 +75,10 @@ impl <'a> DeclCheck<'a> {
     pub fn check_expr_withdecl(&mut self, vars: &Vars, e: &Expr) -> bool {
         for var in vars {
             let result = self.scope.add_var(var, self.options);
-			if !result {
-				eprintln!("Tried to declare variable {} more than once", var);
-				return false;
-			};
+            if !result {
+                eprintln!("Tried to declare variable {} more than once", var);
+                return false;
+            };
         }
         self.visit(e)
     }

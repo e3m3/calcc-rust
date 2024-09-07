@@ -7,9 +7,9 @@
 // CHECK_TARGET:            target triple = "{{[_a-zA-Z0-9\-]+}}"
 
 // CHECK_TARGET-LABEL:      define i64 @calcc_main() {
-// CHECK_TARGET-LABEL:	    entry:
-// CHECK_TARGET:		      ret i64 4096
-// CHECK_TARGET:		    }
+// CHECK_TARGET-LABEL:      entry:
+// CHECK_TARGET:              ret i64 4096
+// CHECK_TARGET:            }
 
 // CHECK_NOTARGET-LABEL:    ; ModuleID = 'calcc'
 // CHECK_NOTARGET:          source_filename = "calcc"
@@ -18,5 +18,5 @@
 
 // CHECK_NOTARGET-LABEL:    define i64 @calcc_main() {
 // CHECK_NOTARGET-LABEL:    entry:
-// CHECK_NOTARGET:		      ret i64 4096
-// CHECK_NOTARGET:		    }
+// CHECK_NOTARGET:            ret i64 4096
+// CHECK_NOTARGET:          }
