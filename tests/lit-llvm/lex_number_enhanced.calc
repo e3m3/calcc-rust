@@ -1,8 +1,8 @@
-// RUN: @calcc --verbose --lex -e -9    | @filecheck %s --check-prefix=CHECK_A
-// RUN: @calcc --verbose --lex -e "- 9" | @filecheck %s --check-prefix=CHECK_B
-// RUN: @calcc --verbose --lex -e 0xAF  | @filecheck %s --check-prefix=CHECK_C
-// RUN: @calcc --verbose --lex -e 0x0c1 | @filecheck %s --check-prefix=CHECK_D
-// RUN: @calcc --verbose --lex -e 012   | @filecheck %s --check-prefix=CHECK_E
+// RUN: @calcc --verbose --lex -e -9    2>&1    | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc --verbose --lex -e "- 9" 2>&1    | @filecheck %s --check-prefix=CHECK_B
+// RUN: @calcc --verbose --lex -e 0xAF  2>&1    | @filecheck %s --check-prefix=CHECK_C
+// RUN: @calcc --verbose --lex -e 0x0c1 2>&1    | @filecheck %s --check-prefix=CHECK_D
+// RUN: @calcc --verbose --lex -e 012   2>&1    | @filecheck %s --check-prefix=CHECK_E
 
 // CHECK_A: Processing input 'Expression:-9'
 // CHECK_A: Read 2 bytes from buffer at line 0

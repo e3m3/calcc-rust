@@ -66,7 +66,7 @@ impl <'a> Parser<'a> {
         let t: &Token = self.get_token(iter);
         if t.is(k) {
             if self.options.verbose {
-                println!("Consumed expected token '{}' at position '{}'", token_kind_to_string(k), iter.position);
+                eprintln!("Consumed expected token '{}' at position '{}'", token_kind_to_string(k), iter.position);
             }
             iter.token = t.clone();
             iter.position += 1;
@@ -180,10 +180,24 @@ impl <'a> Parser<'a> {
 
     fn parse_factor(&self, iter: &mut ParserIter) -> Box<Expr> {
         if self.consume(iter, TokenKind::Minus, false) {
-            self.expect(iter, TokenKind::Number, false);
-            let text = format!("-{}", self.get_prev_token(iter).text.clone());
-            let n = Self::str_to_number(&text);
-            Box::new(Expr::new_number(n))
+			// NOTE: Implement unary minus as for identifiers as BinaryOp(Sub,0,..) and numbers as -<num>
+			if self.consume(iter, TokenKind::Number, false) {
+				let text = format!("-{}", self.get_prev_token(iter).text.clone());
+				let n = Self::str_to_number(&text);
+				Box::new(Expr::new_number(n))
+			} else if self.consume(iter, TokenKind::Ident, false) {
+				let zero = Box::new(Expr::new_number(0));
+				let ident = Box::new(Expr::new_ident(self.get_prev_token(iter).text.clone()));
+				Box::new(Expr::new_binop(Operator::Sub, Box::leak(zero), Box::leak(ident)))
+			} else if self.consume(iter, TokenKind::ParenL, false) {
+				let zero = Box::new(Expr::new_number(0));
+				let expr = self.parse_expr(iter);
+				self.expect(iter, TokenKind::ParenR, false);
+				Box::new(Expr::new_binop(Operator::Sub, Box::leak(zero), Box::leak(expr)))
+			} else {
+				eprintln!("Unexpected token after Token:Minus");
+				exit(ExitCode::ParserError);
+			}
         } else if self.consume(iter, TokenKind::Number, false) {
             let n = Self::str_to_number(&self.get_prev_token(iter).text.clone());
             Box::new(Expr::new_number(n))
@@ -202,7 +216,7 @@ impl <'a> Parser<'a> {
     pub fn parse_input(ret: &mut Box<&'a mut dyn Ast>, parser: &'a mut Parser<'a>, options: &RunOptions) {
         let mut iter = parser.iter();
         *ret = parser.parse_calc(&mut iter);
-        if options.print_ast { println!("AST: {}", ret.to_string()); }
+        if options.print_ast { eprintln!("AST: {}", ret.to_string()); }
         if options.parse_exit { exit(ExitCode::Ok); }
     }
 }

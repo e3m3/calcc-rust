@@ -1,0 +1,76 @@
+// RUN: @calcc -O0 --llvmir -e "with: a,b: a+b + 10" | @filecheck %s
+// RUN: @calcc -O0 -S       -e "with: a,b: a+b + 10" | @filecheck %s
+
+// CHECK-LABEL:	; ModuleID = 'main'
+// CHECK:		source_filename = "main"
+
+// CHECK:		@stderr = external global ptr, align 8
+// CHECK:		@.str.argerr = private unnamed_addr constant [50 x i8] c"Invalid number of args to main. Expected %d args\0A\00", align 1
+// CHECK:		@.str.result = private unnamed_addr constant [25 x i8] c"calcc_main result: %lld\0A\00", align 1
+// CHECK:		@.str.usage = private unnamed_addr constant [29 x i8] c"<exe> [<arg0>, <arg1>, ...]\0A\00", align 1
+
+// CHECK-LABEL:	declare i64 @atoll(ptr)
+
+// CHECK-LABEL:	declare i32 @fprintf(ptr, ptr, ...)
+
+// CHECK-LABEL:	declare i32 @printf(ptr, ...)
+
+// CHECK-LABEL:	define i32 @main(i32 %0, ptr %1) {
+// CHECK-LABEL:	entry:
+// CHECK:		  %vRet = alloca i32, align 4
+// CHECK:		  %vArgc = alloca i32, align 4
+// CHECK:		  %vArgv = alloca ptr, align 8
+// CHECK:		  %v0 = alloca i64, align 8
+// CHECK:		  %v1 = alloca i64, align 8
+// CHECK:		  %v2 = alloca i64, align 8
+// CHECK:		  store i32 0, ptr %vRet, align 4
+// CHECK:		  store i32 %0, ptr %vArgc, align 4
+// CHECK:		  store ptr %1, ptr %vArgv, align 8
+// CHECK:		  %v3 = load i32, ptr %vArgc, align 4
+// CHECK:		  %v4 = icmp ne i32 %v3, 3
+// CHECK:		  br i1 %v4, label %print_err, label %body
+
+// CHECK-LABEL:	print_err:                                        ; preds = %entry
+// CHECK:		  %v5 = load ptr, ptr @stderr, align 8
+// CHECK:		  %v6 = call i32 (ptr, ptr, ...) @fprintf(ptr %v5, ptr @.str.argerr, i32 2)
+// CHECK:		  %v7 = call i32 (ptr, ptr, ...) @fprintf(ptr %v5, ptr @.str.usage)
+// CHECK:		  store i32 1, ptr %vRet, align 4
+// CHECK:		  br label %ret_label
+
+// CHECK-LABEL:	body:                                             ; preds = %entry
+// CHECK:		  %v8 = load ptr, ptr %vArgv, align 8
+// CHECK:		  %v9 = getelementptr ptr, ptr %v8, i32 1
+// CHECK:		  %v10 = load ptr, ptr %v9, align 8
+// CHECK:		  %v11 = call i64 @atoll(ptr %v10)
+// CHECK:		  store i64 %v11, ptr %v1, align 4
+// CHECK:		  %v12 = load ptr, ptr %vArgv, align 8
+// CHECK:		  %v13 = getelementptr ptr, ptr %v12, i32 2
+// CHECK:		  %v14 = load ptr, ptr %v13, align 8
+// CHECK:		  %v15 = call i64 @atoll(ptr %v14)
+// CHECK:		  store i64 %v15, ptr %v2, align 4
+// CHECK:		  %v16 = load i64, ptr %v1, align 4
+// CHECK:		  %v17 = load i64, ptr %v2, align 4
+// CHECK:		  %v18 = call i64 @calcc_main(i64 %v16, i64 %v17)
+// CHECK:		  store i64 %v18, ptr %v0, align 4
+// CHECK:		  %v19 = load i64, ptr %v0, align 4
+// CHECK:		  %v20 = call i32 (ptr, i64, ...) @printf(ptr @.str.result, i64 %v19)
+// CHECK:		  store i32 0, ptr %vRet, align 4
+// CHECK:		  br label %ret_label
+
+// CHECK-LABEL:	ret_label:                                        ; preds = %body, %print_err
+// CHECK:		  %v21 = load i32, ptr %vRet, align 4
+// CHECK:		  ret i32 %v21
+// CHECK:		}
+
+// CHECK-LABEL: define i64 @calcc_main(i64 %0, i64 %1) {
+// CHECK-LABEL:	entry:
+// CHECK:		  %a = alloca i64, align 8
+// CHECK:		  store i64 %0, ptr %a, align 4
+// CHECK:		  %b = alloca i64, align 8
+// CHECK:		  store i64 %1, ptr %b, align 4
+// CHECK:		  %v0 = load i64, ptr %a, align 4
+// CHECK:		  %v1 = load i64, ptr %b, align 4
+// CHECK:		  %v2 = add nsw i64 %v0, %v1
+// CHECK:		  %v3 = add nsw i64 %v2, 10
+// CHECK:		  ret i64 %v3
+// CHECK:		}

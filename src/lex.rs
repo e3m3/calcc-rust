@@ -122,7 +122,7 @@ impl <'a, T: Read> Lexer<'a, T> {
                 Ok(size) => {
                     if size > 0 {
                         if self.options.verbose {
-                            println!("Read {} bytes from buffer at line {}", size, self.line_count);
+                            eprintln!("Read {} bytes from buffer at line {}", size, self.line_count);
                         }
                         self.line_count += 1;
                         self.position = 0;
@@ -158,7 +158,7 @@ impl <'a, T: Read> Lexer<'a, T> {
                     exit(ExitCode::LexerError);
                 }
                 if self.options.verbose {
-                    println!("Found char '{}' in line {} at pos {}", c, self.line_count - 1, pos);
+                    eprintln!("Found char '{}' in line {} at pos {}", c, self.line_count - 1, pos);
                 }
                 c
             }
@@ -199,7 +199,7 @@ impl <'a, T: Read> Lexer<'a, T> {
             let pos_end: usize = self.collect_token_sequence(pos_start + 1, Self::is_digit);
             self.form_token(t, pos_start, pos_end, TokenKind::Number);
         } else if Self::is_letter(c) {
-            let pos_end: usize = self.collect_token_sequence(pos_start + 1, Self::is_letter);
+            let pos_end: usize = self.collect_token_sequence(pos_start + 1, Self::is_ident);
             let text = String::from(&self.line[pos_start..pos_end]);
             self.form_token(t, pos_start, pos_end, if text == "with" {TokenKind::With} else {TokenKind::Ident});
         } else {
@@ -241,6 +241,10 @@ impl <'a, T: Read> Lexer<'a, T> {
         c >= '0' && c <= '9'
     }
 
+	fn is_ident(c: char) -> bool {
+		Self::is_digit(c) || Self::is_letter(c)
+	}
+
     fn is_hex_digit(c: char) -> bool {
         (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')
     }
@@ -254,10 +258,10 @@ impl <'a, T: Read> Lexer<'a, T> {
         while !t.is(TokenKind::Eoi) {
             lex.next(&mut t);
             if t.is(TokenKind::Unknown) {
-                println!("Found unknown token '{}' in lexer", t.text);
+                eprintln!("Found unknown token '{}' in lexer", t.text);
                 if !options.drop_token { exit(ExitCode::LexerError); }
             } else if options.verbose {
-                println!("Lexed token '{}'", t.to_string());
+                eprintln!("Lexed token '{}'", t.to_string());
             }
             ts.push(t.clone());
         }

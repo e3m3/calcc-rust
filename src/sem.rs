@@ -27,18 +27,18 @@ impl Scope {
         Scope{vars: Default::default()}
     }
 
-    pub fn add_var(&mut self, var: &String, options: &RunOptions) {
+    pub fn add_var(&mut self, var: &String, options: &RunOptions) -> bool {
         let result = self.vars.insert(var.clone());
         if options.verbose && result {
-            println!("Added var '{}' to scope", *var);
+            eprintln!("Added var '{}' to scope", *var);
         }
-        assert!(result);
+		result
     }
 
     pub fn contains_var(&self, var: &String, options: &RunOptions) -> bool {
         let result = self.vars.contains(var);
         if options.verbose && result {
-            println!("Found var '{}' in scope", var);
+            eprintln!("Found var '{}' in scope", var);
         }
         if !result {
             eprintln!("Found unbound var '{}' in scope", var);
@@ -74,7 +74,11 @@ impl <'a> DeclCheck<'a> {
 
     pub fn check_expr_withdecl(&mut self, vars: &Vars, e: &Expr) -> bool {
         for var in vars {
-            self.scope.add_var(var, self.options);
+            let result = self.scope.add_var(var, self.options);
+			if !result {
+				eprintln!("Tried to declare variable {} more than once", var);
+				return false;
+			};
         }
         self.visit(e)
     }
@@ -113,9 +117,9 @@ impl <'a> ReprCheck<'a> {
             Factor::Ident(_)        => true,
             Factor::Number(n)       => {
                 let result: bool = *n <= std::i64::MAX && *n >= std::i64::MIN;
-                if self.options.verbose {
-                    println!("Number '{}' passed repr check", *n);
-                } else {
+                if self.options.verbose && result {
+                    eprintln!("Number '{}' passed repr check", *n);
+                } else if !result {
                     eprintln!("Number '{}' failed repr check", *n);
                 }
                 result

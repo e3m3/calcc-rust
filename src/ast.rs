@@ -19,6 +19,7 @@ pub trait Ast {
     fn accept_gen(&self, visitor: &mut dyn AstGenerator) -> GenResult;
     fn is_expr(&self) -> bool;
     fn get_expr(&self) -> &ExprKind;
+    fn get_vars(&self) -> usize;
     fn to_string(&self) -> String;
 }
 
@@ -74,27 +75,29 @@ impl <'a> Default for ExprKind<'a> {
 
 pub struct Expr<'a> {
     expr: ExprKind<'a>,
+    vars: usize,
 }
 
 impl <'a> Expr<'a> {
-    pub fn new(expr: ExprKind<'a>) -> Self {
-        Expr{expr: expr}
+    pub fn new(expr: ExprKind<'a>, n: usize) -> Self {
+        Expr{expr: expr, vars: n}
     }
 
     pub fn new_number(n: i64) -> Self {
-        Expr::new(ExprKind::Factor(Factor::Number(n)))
+        Expr::new(ExprKind::Factor(Factor::Number(n)), 0)
     }
 
     pub fn new_ident(text: String) -> Self {
-        Expr::new(ExprKind::Factor(Factor::Ident(text)))
+        Expr::new(ExprKind::Factor(Factor::Ident(text)), 0)
     }
 
     pub fn new_binop(op: Operator, e_left: &'a Expr<'a>, e_right: &'a Expr<'a>) -> Self {
-        Expr::new(ExprKind::BinaryOp(op, e_left, e_right))
+        Expr::new(ExprKind::BinaryOp(op, e_left, e_right), e_left.vars + e_right.vars)
     }
 
     pub fn new_withdecl(vars: Vars, e: &'a Expr<'a>) -> Self {
-        Expr::new(ExprKind::WithDecl(vars, e))
+        let n = vars.len();
+        Expr::new(ExprKind::WithDecl(vars, e), n + e.vars)
     }
 }
 
@@ -115,6 +118,10 @@ impl <'a> Ast for Expr<'a> {
         &self.expr    
     }
 
+    fn get_vars(&self) -> usize {
+        self.vars
+    }
+
     fn to_string(&self) -> String {
         match &self.expr {
             ExprKind::Undefined                     => String::from("Undefined()"),
@@ -131,6 +138,6 @@ impl <'a> Ast for Expr<'a> {
 
 impl <'a> Default for Expr<'a> {
     fn default() -> Self {
-        Expr::new(Default::default())
+        Expr::new(Default::default(), Default::default())
     }
 }

@@ -1,7 +1,8 @@
-// RUN:     @calcc --verbose --sem -e "with: a,b: 2*a + b"      | @filecheck %s --check-prefix=CHECK_A
-// RUN:     @calcc --verbose --sem -e "with: a,b: b + 2*a"      | @filecheck %s --check-prefix=CHECK_B
+// RUN:     @calcc --verbose --sem -e "with: a,b: 2*a + b" 2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN:     @calcc --verbose --sem -e "with: a,b: b + 2*a" 2>&1 | @filecheck %s --check-prefix=CHECK_B
 // RUN: not @calcc --verbose --sem -e "with: a: 2*a + b" 2>&1   | @filecheck %s --check-prefix=CHECK_C
 // RUN: not @calcc --verbose --sem -e "with: b: 2*a + b" 2>&1   | @filecheck %s --check-prefix=CHECK_D
+// RUN: not @calcc --verbose --sem -e "with: b,b: 2*b + b" 2>&1 | @filecheck %s --check-prefix=CHECK_E
 
 // CHECK_A: Added var 'a' to scope
 // CHECK_A: Added var 'b' to scope
@@ -21,3 +22,7 @@
 // CHECK_D: Added var 'b' to scope
 // CHECK_D: Found unbound var 'a' in scope
 // CHECK_D: AST failed DeclCheck semantics check
+
+// CHECK_E: Added var 'b' to scope
+// CHECK_E: Tried to declare variable b more than once
+// CHECK_E: AST failed DeclCheck semantics check

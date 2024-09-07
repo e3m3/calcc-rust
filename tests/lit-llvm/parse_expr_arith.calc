@@ -1,9 +1,9 @@
-// RUN: @calcc --verbose --ast --parse -e "32 + 50"             | @filecheck %s --check-prefix=CHECK_A
-// RUN: @calcc --verbose --ast --parse -e "32 - 50"             | @filecheck %s --check-prefix=CHECK_B
-// RUN: @calcc --verbose --ast --parse -e "32 / 50"             | @filecheck %s --check-prefix=CHECK_C
-// RUN: @calcc --verbose --ast --parse -e "32 * 50"             | @filecheck %s --check-prefix=CHECK_D
-// RUN: @calcc --verbose --ast --parse -e "32*2/4 + 50/10 - 1"  | @filecheck %s --check-prefix=CHECK_E
-// RUN: @calcc --verbose --ast --parse -e "32*-2/4 - 1"         | @filecheck %s --check-prefix=CHECK_F
+// RUN: @calcc --verbose --ast --parse -e "32 + 50"            2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc --verbose --ast --parse -e "32 - 50"            2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN: @calcc --verbose --ast --parse -e "32 / 50"            2>&1 | @filecheck %s --check-prefix=CHECK_C
+// RUN: @calcc --verbose --ast --parse -e "32 * 50"            2>&1 | @filecheck %s --check-prefix=CHECK_D
+// RUN: @calcc --verbose --ast --parse -e "32*2/4 + 50/10 - 1" 2>&1 | @filecheck %s --check-prefix=CHECK_E
+// RUN: @calcc --verbose --ast --parse -e "32*-2/4 - 1"        2>&1 | @filecheck %s --check-prefix=CHECK_F
 
 // CHECK_A: Consumed expected token 'Number' at position '0'
 // CHECK_A: Consumed expected token 'Plus' at position '1'

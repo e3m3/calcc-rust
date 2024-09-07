@@ -1,5 +1,5 @@
-// RUN: @calcc --verbose --ast --parse -e "with: a: 32*a/4 + a/10 - 1"    | @filecheck %s --check-prefix=CHECK_A
-// RUN: @calcc --verbose --ast --parse -e "with: a,b: 32*a/b + a/10 - 1"  | @filecheck %s --check-prefix=CHECK_B
+// RUN: @calcc --verbose --ast --parse -e "with: a: 32*a/4 + a/10 - 1"   2>&1   | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc --verbose --ast --parse -e "with: a,b: 32*a/b + a/10 - 1" 2>&1   | @filecheck %s --check-prefix=CHECK_B
 
 // CHECK_A: Consumed expected token 'With' at position '0'
 // CHECK_A: Consumed expected token 'Colon' at position '1'

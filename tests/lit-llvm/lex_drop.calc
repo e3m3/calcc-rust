@@ -1,4 +1,4 @@
-// RUN: echo "hello" | @calcc --verbose --lex --drop - | @filecheck %s
+// RUN: echo "hello" | @calcc --verbose --lex --drop - 2>&1 | @filecheck %s
 
 // CHECK: Processing input 'Stdin'
 // CHECK: Read 6 bytes from buffer at line 0

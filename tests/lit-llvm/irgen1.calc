@@ -1,0 +1,18 @@
+// RUN: @calcc --nomain -O0 --llvmir -e "with: a,b: a+b + 10" | @filecheck %s
+// RUN: @calcc --nomain -O0 -S       -e "with: a,b: a+b + 10" | @filecheck %s
+
+// CHECK-LABEL: ; ModuleID = 'calcc'
+// CHECK:       source_filename = "calcc"
+
+// CHECK-LABEL: define i64 @calcc_main(i64 %0, i64 %1) {
+// CHECK-LABEL:	entry:
+// CHECK:		  %a = alloca i64, align 8
+// CHECK:		  store i64 %0, ptr %a, align 4
+// CHECK:		  %b = alloca i64, align 8
+// CHECK:		  store i64 %1, ptr %b, align 4
+// CHECK:		  %v0 = load i64, ptr %a, align 4
+// CHECK:		  %v1 = load i64, ptr %b, align 4
+// CHECK:		  %v2 = add nsw i64 %v0, %v1
+// CHECK:		  %v3 = add nsw i64 %v2, 10
+// CHECK:		  ret i64 %v3
+// CHECK:		}

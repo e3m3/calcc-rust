@@ -1,6 +1,6 @@
-// RUN:     @calcc -h     | @filecheck %s
-// RUN:     @calcc --help | @filecheck %s
-// RUN: not @calcc 2>&1   | @filecheck %s --check-prefixes=CHECK_INPUT,CHECK
+// RUN:     @calcc -h 2>&1      | @filecheck %s
+// RUN:     @calcc --help 2>&1  | @filecheck %s
+// RUN: not @calcc 2>&1         | @filecheck %s --check-prefixes=CHECK_INPUT,CHECK
 
 // CHECK_INPUT: No input file/name specified!
 // CHECK:       usage: calcc [OPTIONS] <INPUT>

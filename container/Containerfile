@@ -8,7 +8,7 @@ ENV PROJECT_DIR=${HOME}/project
 ENV CARGO_ENV=/root/.cargo/env
 
 RUN dnf upgrade -y
-RUN dnf install -y rustup gcc llvm llvm-devel python3-lit
+RUN dnf install -y libstdc++-static gcc llvm llvm-devel clang rustup python3-lit
 RUN dnf clean -y all
 
 ENV RUST_CHANNEL=stable

@@ -11,23 +11,28 @@ Author/Maintainer:  Giordano Salvador <73959795+e3m3@users.noreply.github.com>
 Learning rust by implementing the calc langauge using the llvm-sys crate.
 Implements the calc language, inspired by the C++ implementation presented by Macke and Kwan in [1][1] and [2][2].
 
+Accepted factors in the grammar have been extended for convenience (see 'src/{lex,parse}.rs' and 'tests/lit-llvm/').
+The output of the compiler is LLVM IR or LLVM bytecode.
+
 
 ##  Grammar
 
 ```text
-calc : ("with" ":" ident ("," ident)* ":" )? expr ";"
+calc : ("with" ":" ident ("," ident)* ":" )? expr
 ```
 
 
 ##  Prequisites
 
+*   libstdc++
+
 *   rust-2021
 
-*   llvm-18
+*   llvm18 and llvm-sys (or llvm version matching llvm-sys)
 
-*   python3-lit, FileCheck
+*   python3-lit, FileCheck, clang (for testing)
 
-*   [docker|podman]
+*   [docker|podman] (for testing/containerization)
 
 
 ##  Setup

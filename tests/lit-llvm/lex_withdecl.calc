@@ -1,6 +1,6 @@
-// RUN: @calcc --verbose --lex -e "with: a,b:a+b"       | @filecheck %s --check-prefix=CHECK_A
-// RUN: @calcc --verbose --lex -e "with : a , b: a + b" | @filecheck %s --check-prefix=CHECK_B
-// RUN: @calcc --verbose --lex -e "with: a,b:a*a/b"     | @filecheck %s --check-prefix=CHECK_C
+// RUN: @calcc --verbose --lex -e "with: a,b:a+b"       2>&1    | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc --verbose --lex -e "with : a , b: a + b" 2>&1    | @filecheck %s --check-prefix=CHECK_B
+// RUN: @calcc --verbose --lex -e "with: a,b:a*a/b"     2>&1    | @filecheck %s --check-prefix=CHECK_C
 
 // CHECK_A: Processing input 'Expression:with: a,b:a+b'
 // CHECK_A: Read 13 bytes from buffer at line 0
