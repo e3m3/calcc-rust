@@ -36,13 +36,16 @@ mod tests{
         String::from(if cfg!(target_os = "linux") {"bash"} else {"cmd"})
     }
 
-    fn get_lit() -> &'static str {
+    fn get_lit() -> String {
         if cfg!(target_os = "linux") {
-            "/usr/bin/lit"
+            match env::var("PYTHON_VENV_PATH") {
+                Ok(path)    => format!("{}/bin/lit", path),
+                Err(_)      => String::from("/usr/bin/lit"),
+            }
         } else {
             eprintln!("OS not supported");
             assert!(false);
-            ""
+            String::new()
         }
     }
 
@@ -54,7 +57,8 @@ mod tests{
         }
 
         let calcc_dir: PathBuf = get_bin_dir();
-        let lit_bin: &Path = Path::new(get_lit());
+        let lit_bin_str: String = get_lit();
+        let lit_bin: &Path = Path::new(lit_bin_str.as_str());
         let shell: String = get_shell();
         let tests_dir: PathBuf = get_tests_dir();
         let lit_dir: PathBuf = tests_dir.join("lit-llvm");

@@ -1,0 +1,50 @@
+FROM docker.io/ubuntu:24.04
+
+LABEL maintainer="Giordano Salvador <73959795+e3m3@users.noreply.github.com>"
+USER root
+
+ENV TERM=xterm-256color
+ENV PROJECT_DIR=${HOME}/project
+
+ENV SSL_CONF_TMP=/etc/apt/apt.conf.d/99_tmp_ssl-verify-off.conf
+ENV SED_HTTPS='s%http://(.*archive|security).ubuntu.com%https://mirrors.edge.kernel.org%g'
+
+RUN echo 'Acquire::https::Verify-Peer "false";' >${SSL_CONF_TMP}  && \
+    sed --in-place=.orig --regexp-extended ${SED_HTTPS} /etc/apt/sources.list.d/*  && \
+    apt-get update && apt-get install ca-certificates -y  && \
+    rm ${SSL_CONF_TMP}
+
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y libstdc++-14-dev gcc llvm llvm-dev clang rustup python3-pip python3-venv
+RUN apt-get clean
+
+ENV PYTHON_VENV_PATH=/root/.python/venv
+RUN python3 -m venv ${PYTHON_VENV_PATH}
+ENV PATH=${PYTHON_VENV_PATH}/bin:${PATH}
+RUN pip install lit
+
+ENV RUST_CHANNEL=stable
+ENV RUSTUP_HOME=/root/.rustup
+ENV TOOLCHAIN=${RUST_CHANNEL}-x86_64-unknown-linux-gnu
+
+RUN rustup set auto-self-update disable
+RUN rustup toolchain install ${RUST_CHANNEL}
+RUN rustup override set ${RUST_CHANNEL}
+ENV PATH=${RUSTUP_HOME}/toolchains/${TOOLCHAIN}/bin:${PATH}
+ENV PATH=${RUSTUP_HOME}/toolchains/${TOOLCHAIN}/libexec:${PATH}
+ENV LD_LIBRARY_PATH=${RUSTUP_HOME}/toolchains/${TOOLCHAIN}/lib:${LD_LIBRARY_PATH}
+
+RUN mkdir -p ${PROJECT_DIR}
+RUN mkdir -p ${PROJECT_DIR}/src
+RUN mkdir -p ${PROJECT_DIR}/tests
+
+COPY Cargo.toml             ${PROJECT_DIR}/
+COPY rust-toolchain.toml    ${PROJECT_DIR}/
+COPY LICENSE                ${PROJECT_DIR}/
+COPY README.md              ${PROJECT_DIR}/
+COPY src                    ${PROJECT_DIR}/src/
+COPY tests                  ${PROJECT_DIR}/tests/
+
+WORKDIR ${PROJECT_DIR}
+RUN cargo build
+RUN cargo test -- --nocapture
