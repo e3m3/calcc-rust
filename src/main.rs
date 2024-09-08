@@ -54,7 +54,7 @@ fn help(code: ExitCode) -> ! {
         "-S|--llvmir        Exit after outputting LLVM IR (post-optimization) instead of byte code",
         "--nomain           Omit linking with main module (i.e., output kernel only)",
         "--notarget         Omit target specific configuration in LLVM IR/bytecode",
-        "-o[=]<F>           Output to LLVM IR (.ll) or bytecode (.bc) instead of Stdout",
+        "-o[=]<F>           Output to LLVM IR (.ll) or bytecode (.bc) file F instead of Stdout",
         "-O<0|1|2|3>        Set the optimization level (default: O2)",
         "--parse            Exit after running the parser",
         "--sem              Exit after running the semantics check",
