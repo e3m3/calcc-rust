@@ -1,0 +1,62 @@
+FROM docker.io/ubuntu:22.04
+
+LABEL maintainer="Giordano Salvador <73959795+e3m3@users.noreply.github.com>"
+USER root
+
+ENV TERM=xterm-256color
+ENV PROJECT_DIR=${HOME}/project
+
+ENV SSL_CONF_TMP=/etc/apt/apt.conf.d/99_tmp_ssl-verify-off.conf
+ENV SED_HTTPS='s%http://(.*archive|security).ubuntu.com%https://mirrors.edge.kernel.org%g'
+
+RUN echo 'Acquire::https::Verify-Peer "false";' >${SSL_CONF_TMP}  && \
+    sed --in-place=.orig --regexp-extended ${SED_HTTPS} /etc/apt/sources.list  && \
+    apt-get update && apt-get install ca-certificates -y  && \
+    rm ${SSL_CONF_TMP}
+
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y libstdc++-12-dev gcc python3-pip python3-venv curl git
+RUN apt-get clean
+
+ENV PYTHON_VENV_PATH=/root/.python/venv
+RUN python3 -m venv ${PYTHON_VENV_PATH}
+ENV PATH=${PYTHON_VENV_PATH}/bin:${PATH}
+RUN pip install lit
+
+ENV SPACK_GIT=https://github.com/spack/spack
+ENV SPACK_VER=v0.22.1
+ENV SPACK_HOME=/root/spack
+ENV SPACK_SETUP=${SPACK_HOME}/share/spack/setup-env.sh
+ENV LLVM_VER=18.1.3
+
+RUN git clone --recursive --branch ${SPACK_VER} ${SPACK_GIT} ${SPACK_HOME}
+RUN . ${SPACK_SETUP}  &&  spack install llvm@${LLVM_VER} +clang
+
+ENV RUST_CHANNEL=stable
+ENV RUSTUP_HOME=/root/.rustup
+ENV TOOLCHAIN=${RUST_CHANNEL}-x86_64-unknown-linux-gnu
+ENV CARGO_ENV=/root/.cargo/env
+
+RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf -o rustup-boostrap.sh  && \
+    sh rustup-boostrap.sh -y
+
+RUN . ${SPACK_SETUP}  &&  . ${CARGO_ENV}  &&  rustup update
+RUN . ${SPACK_SETUP}  &&  . ${CARGO_ENV}  &&  rustup toolchain install ${RUST_CHANNEL}
+RUN . ${SPACK_SETUP}  &&  . ${CARGO_ENV}  &&  rustup override set ${RUST_CHANNEL}
+
+RUN mkdir -p ${PROJECT_DIR}
+RUN mkdir -p ${PROJECT_DIR}/src
+RUN mkdir -p ${PROJECT_DIR}/tests
+
+COPY Cargo.toml             ${PROJECT_DIR}/
+COPY rust-toolchain.toml    ${PROJECT_DIR}/
+COPY LICENSE                ${PROJECT_DIR}/
+COPY README.md              ${PROJECT_DIR}/
+COPY src                    ${PROJECT_DIR}/src/
+COPY tests                  ${PROJECT_DIR}/tests/
+
+ARG BUILD_MODE=
+
+WORKDIR ${PROJECT_DIR}
+RUN . ${SPACK_SETUP}  &&  . ${CARGO_ENV}  &&  cargo build --verbose ${BUILD_MODE}
+RUN . ${SPACK_SETUP}  &&  . ${CARGO_ENV}  &&  cargo test --verbose ${BUILD_MODE} -- --nocapture

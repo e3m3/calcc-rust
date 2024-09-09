@@ -8,6 +8,10 @@ Author/Maintainer:  Giordano Salvador <73959795+e3m3@users.noreply.github.com>
 
 #   Description (calcc language)
 
+[![Ubuntu 22.04](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2204.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2204.yaml)
+[![Ubuntu 24.04](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2404.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2204.yaml)
+[![Fedora 40](https://github.com/e3m3/calcc-rust/actions/workflows/fedora-40.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/fedora-40.yaml)
+
 Learning [Rust][1] [[1]] by implementing the calc langauge using the [llvm-sys][2] [[2]] crate.
 Implements the calc language, inspired by the [C++][3] [[3]] implementation presented by Macke and Kwan in [[4]] and [[5]].
 
@@ -37,9 +41,9 @@ calc : ("with" ":" ident ("," ident)* ":" )? expr
 
 *   [docker|podman] (for testing/containerization)
 
-    *   A [Fedora][7] [[7]] image can be built using `containers/Containerfile.fedora`.
+    *   A [Fedora][7] [[7]] image can be built using `containers/Containerfile.fedora*`.
 
-    *   An [Ubuntu][8] [[8]] image can be built using `containers/Containerfile.ubuntu`.
+    *   An [Ubuntu][8] [[8]] image can be built using `containers/Containerfile.ubuntu*`.
 
 
 ##  Setup

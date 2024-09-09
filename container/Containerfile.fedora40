@@ -14,8 +14,8 @@ RUN dnf clean -y all
 ENV RUST_CHANNEL=stable
 
 RUN rustup-init -y
-RUN source ${CARGO_ENV} && rustup toolchain install ${RUST_CHANNEL}
-RUN source ${CARGO_ENV} && rustup override set ${RUST_CHANNEL}
+RUN source ${CARGO_ENV}  &&  rustup toolchain install ${RUST_CHANNEL}
+RUN source ${CARGO_ENV}  &&  rustup override set ${RUST_CHANNEL}
 
 RUN mkdir -p ${PROJECT_DIR}
 RUN mkdir -p ${PROJECT_DIR}/src
@@ -31,5 +31,5 @@ COPY tests                  ${PROJECT_DIR}/tests/
 ARG BUILD_MODE=
 
 WORKDIR ${PROJECT_DIR}
-RUN source ${CARGO_ENV} && cargo build --verbose ${BUILD_MODE}
-RUN source ${CARGO_ENV} && cargo test --verbose ${BUILD_MODE} -- --nocapture
+RUN source ${CARGO_ENV}  &&  cargo build --verbose ${BUILD_MODE}
+RUN source ${CARGO_ENV}  &&  cargo test --verbose ${BUILD_MODE} -- --nocapture
