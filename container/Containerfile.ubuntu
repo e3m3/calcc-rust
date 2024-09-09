@@ -45,6 +45,8 @@ COPY README.md              ${PROJECT_DIR}/
 COPY src                    ${PROJECT_DIR}/src/
 COPY tests                  ${PROJECT_DIR}/tests/
 
+ARG BUILD_MODE=
+
 WORKDIR ${PROJECT_DIR}
-RUN cargo build
-RUN cargo test -- --nocapture
+RUN cargo build --verbose ${BUILD_MODE}
+RUN cargo test --verbose ${BUILD_MODE} -- --nocapture

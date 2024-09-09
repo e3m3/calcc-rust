@@ -1,0 +1,53 @@
+name: Build-and-test
+
+on:
+
+  workflow_dispatch:
+    branches: [ "main" ]
+    inputs:
+      build_mode:
+        description: Build optimization level 
+        required: true
+        default: debug
+        type: choice
+        options:
+          - debug
+          - release
+
+jobs:
+
+  build-and-test-ubuntu-2404:
+    env:
+      DISTRO: ubuntu
+      OS: ubuntu-2404
+    runs-on: ubuntu-24.04
+    steps:
+
+    - name: Checkout source  
+      uses: actions/checkout@v4
+
+    - name: Build source container
+      run: |
+        docker build \
+          -f container/Containerfile.${{ env.DISTRO }} \
+          -t ${{ env.OS }}-calcc-${{ inputs.build_mode }} \
+          ${{ inputs.build_mode == 'release' && '--build-arg=BUILD_MODE=--release' || '' }} \
+          .
+
+  build-and-test-fedora-40:
+    env:
+      DISTRO: fedora
+      OS: fedora-40
+    runs-on: ubuntu-24.04
+    steps:
+
+    - name: Checkout source  
+      uses: actions/checkout@v4
+
+    - name: Build source container
+      run: |
+        docker build \
+          -f container/Containerfile.${{ env.DISTRO }} \
+          -t ${{ env.OS }}-calcc-${{ inputs.build_mode }} \
+          ${{ inputs.build_mode == 'release' && '--build-arg=BUILD_MODE=--release' || '' }} \
+          .
