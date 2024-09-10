@@ -16,25 +16,21 @@ RUN echo 'Acquire::https::Verify-Peer "false";' >${SSL_CONF_TMP}  && \
 
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y libstdc++-12-dev gcc python3-pip python3-venv curl git
-RUN apt-get install -y llvm-15 libtinfo5 libncurses-dev # for libtinfo.a, FileCheck
-RUN ln -s /usr/bin/FileCheck-15 /usr/bin/FileCheck
-
 RUN apt-get clean
-
-ENV LLVM_DIR=clang+llvm-18.1.8-x86_64-linux-gnu-ubuntu-18.04
-ENV LLVM_BIN_URL=https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/${LLVM_DIR}.tar.xz
-RUN curl -L -o /root/llvm-package.tar.xz ${LLVM_BIN_URL}
-RUN cd /root  &&  tar --no-same-owner -Jxf /root/llvm-package.tar.xz
-ENV PATH=/root/${LLVM_DIR}/bin:${PATH}
-ENV PATH=/root/${LLVM_DIR}/libexec:${PATH}
-ENV LD_LIBRARY_PATH=/root/${LLVM_DIR}/lib:${LD_LIBRARY_PATH}
-ENV C_INCLUDE_PATH=/root/${LLVM_DIR}/include:${C_INCLUDE_PATH}
-ENV CPLUS_INCLUDE_PATH=/root/${LLVM_DIR}/include:${CPLUS_INCLUDE_PATH}
 
 ENV PYTHON_VENV_PATH=/root/.python/venv
 RUN python3 -m venv ${PYTHON_VENV_PATH}
 ENV PATH=${PYTHON_VENV_PATH}/bin:${PATH}
 RUN pip install lit
+
+ENV SPACK_GIT=https://github.com/spack/spack
+ENV SPACK_VER=v0.22.1
+ENV SPACK_HOME=/root/spack
+ENV SPACK_SETUP=${SPACK_HOME}/share/spack/setup-env.sh
+ENV LLVM_VER=18.1.3
+
+RUN git clone --recursive --branch ${SPACK_VER} ${SPACK_GIT} ${SPACK_HOME}
+RUN . ${SPACK_SETUP}  &&  spack install llvm@${LLVM_VER} +clang
 
 ENV RUST_CHANNEL=stable
 ENV RUSTUP_HOME=/root/.rustup
@@ -44,9 +40,9 @@ ENV CARGO_ENV=/root/.cargo/env
 RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf -o rustup-boostrap.sh  && \
     sh rustup-boostrap.sh -y
 
-RUN . ${CARGO_ENV}  &&  rustup update
-RUN . ${CARGO_ENV}  &&  rustup toolchain install ${RUST_CHANNEL}
-RUN . ${CARGO_ENV}  &&  rustup override set ${RUST_CHANNEL}
+RUN . ${SPACK_SETUP}  &&  . ${CARGO_ENV}  &&  rustup update
+RUN . ${SPACK_SETUP}  &&  . ${CARGO_ENV}  &&  rustup toolchain install ${RUST_CHANNEL}
+RUN . ${SPACK_SETUP}  &&  . ${CARGO_ENV}  &&  rustup override set ${RUST_CHANNEL}
 
 RUN mkdir -p ${PROJECT_DIR}
 RUN mkdir -p ${PROJECT_DIR}/src
@@ -59,10 +55,8 @@ COPY README.md              ${PROJECT_DIR}/
 COPY src                    ${PROJECT_DIR}/src/
 COPY tests                  ${PROJECT_DIR}/tests/
 
-RUN sed --in-place=.orig 's/"force-dynamic"/"force-static"/g' ${PROJECT_DIR}/Cargo.toml
-
 ARG BUILD_MODE=
 
 WORKDIR ${PROJECT_DIR}
-RUN . ${CARGO_ENV}  &&  cargo build --verbose ${BUILD_MODE}
-RUN . ${CARGO_ENV}  &&  cargo test --verbose ${BUILD_MODE} -- --nocapture
+RUN . ${SPACK_SETUP}  &&  . ${CARGO_ENV}  &&  cargo build --verbose ${BUILD_MODE}
+RUN . ${SPACK_SETUP}  &&  . ${CARGO_ENV}  &&  cargo test --verbose ${BUILD_MODE} -- --nocapture

@@ -9,7 +9,7 @@ Author/Maintainer:  Giordano Salvador <73959795+e3m3@users.noreply.github.com>
 #   Description (calcc language)
 
 [![Ubuntu 22.04](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2204.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2204.yaml)
-[![Ubuntu 24.04](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2404.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2204.yaml)
+[![Ubuntu 24.04](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2404.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2404.yaml)
 [![Fedora 40](https://github.com/e3m3/calcc-rust/actions/workflows/fedora-40.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/fedora-40.yaml)
 
 Learning [Rust][1] [[1]] by implementing the calc langauge using the [llvm-sys][2] [[2]] crate.
