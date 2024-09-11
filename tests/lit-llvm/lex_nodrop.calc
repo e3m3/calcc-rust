@@ -1,5 +1,5 @@
-// RUN: echo -n "hello $" |     @calcc --verbose --lex --drop - 2>&1 | @filecheck %s --check-prefix=CHECK_A
-// RUN: echo -n "hello é" | not @calcc --verbose --lex --drop - 2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN: echo -n "hello $" | not @calcc --verbose --lex - 2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: echo -n "hello é" | not @calcc --verbose --lex - 2>&1 | @filecheck %s --check-prefix=CHECK_B
 
 // CHECK_A: Processing input 'Stdin'
 // CHECK_A: Read 7 bytes from buffer at line 0
@@ -12,7 +12,6 @@
 // CHECK_A: Found char ' ' in line 0 at pos 5
 // CHECK_A: Found char '$' in line 0 at pos 6
 // CHECK_A: Found unknown token '$' in lexer
-// CHECK_A: Lexed token 'Eoi:'
 
 // CHECK_B: Processing input 'Stdin'
 // CHECK_B: Read 9 bytes from buffer at line 0

@@ -208,7 +208,7 @@ impl <'a> Parser<'a> {
             self.expect(iter, TokenKind::ParenR, false);
             expr
         } else {
-            eprintln!("Unxpected token");
+            eprintln!("Unexpected token");
             exit(ExitCode::ParserError);
         }
     }

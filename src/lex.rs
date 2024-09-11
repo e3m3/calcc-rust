@@ -15,8 +15,10 @@ use options::RunOptions;
 #[derive(Clone,Copy,Eq,PartialEq)]
 pub enum TokenKind {
     Comma,
+    Comment,
     Colon,
     Eoi,
+    Eol,
     Ident,
     Minus,
     Number,
@@ -32,8 +34,10 @@ pub enum TokenKind {
 pub fn token_kind_to_string(k: TokenKind) -> String {
     String::from(match k {
         TokenKind::Comma    => "Comma",
+        TokenKind::Comment  => "Comment",
         TokenKind::Colon    => "Colon",
         TokenKind::Eoi      => "Eoi",
+        TokenKind::Eol      => "Eol",
         TokenKind::Ident    => "Ident",
         TokenKind::Minus    => "Minus",
         TokenKind::Number   => "Number",
@@ -178,14 +182,16 @@ impl <'a, T: Read> Lexer<'a, T> {
         pos_end
     }
 
-    fn next_in_line(&mut self, t: &mut Token) {
+    fn next_in_line(&mut self, t: &mut Token) -> () {
         let (mut c, mut pos_start): (char, usize) = ('\0', self.position);
         while self.has_next_in_line(pos_start) {
             c = self.next_char_in_line(pos_start);
             if !Self::is_whitespace(c) { break }
             pos_start += 1;
         }
-        if Self::is_digit(c) {
+        if Self::is_whitespace(c) {
+            self.form_token(t, pos_start, pos_start + 1, TokenKind::Eol);
+        } else if Self::is_digit(c) {
             if c == '0' {
                 if self.has_next_in_line(pos_start + 1) {
                     c = self.next_char_in_line(pos_start + 1);
@@ -202,6 +208,17 @@ impl <'a, T: Read> Lexer<'a, T> {
             let pos_end: usize = self.collect_token_sequence(pos_start + 1, Self::is_ident);
             let text = String::from(&self.line[pos_start..pos_end]);
             self.form_token(t, pos_start, pos_end, if text == "with" {TokenKind::With} else {TokenKind::Ident});
+        } else if Self::is_slash(c) {
+            if self.has_next_in_line(pos_start + 1) {
+                c = self.next_char_in_line(pos_start + 1);
+                if Self::is_slash(c) {
+                    // It's a comment => consume the rest of the line
+                    let pos_end: usize = self.collect_token_sequence(pos_start + 2, Self::is_any);
+                    self.form_token(t, pos_start, pos_end, TokenKind::Comment);
+                    return;
+                }
+            }
+            self.form_token(t, pos_start, pos_start + 1, TokenKind::Slash);
         } else {
             self.form_token(t, pos_start, pos_start + 1, match c {
                 ',' => TokenKind::Comma,
@@ -217,7 +234,7 @@ impl <'a, T: Read> Lexer<'a, T> {
         }
     }
 
-    pub fn next(&mut self, t: &mut Token) {
+    pub fn next(&mut self, t: &mut Token) -> () {
         let mut t_tmp: Token = Default::default();
         if self.has_next() {
             self.next_in_line(&mut t_tmp);
@@ -227,10 +244,24 @@ impl <'a, T: Read> Lexer<'a, T> {
         std::mem::swap(t, &mut t_tmp);
     }
 
-    fn form_token(&mut self, t: &mut Token, pos_start: usize, pos_end: usize, k: TokenKind) {
+    fn form_token(&mut self, t: &mut Token, pos_start: usize, pos_end: usize, k: TokenKind) -> () {
         t.kind = k;
-        t.text = String::from(if k == TokenKind::Unknown { "" } else { &self.line[pos_start..pos_end] });
+        t.text = String::from(
+            if k == TokenKind::Eoi || k == TokenKind::Eol {
+                ""
+            } else {
+                &self.line[pos_start..pos_end]
+            }
+        );
         self.position = pos_end;
+    }
+
+    fn is_any(_c: char) -> bool {
+        true
+    }
+
+    fn is_slash(c: char) -> bool {
+        c == '/'
     }
 
     fn is_whitespace(c: char) -> bool {
@@ -253,7 +284,7 @@ impl <'a, T: Read> Lexer<'a, T> {
         (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
     }
 
-    pub fn lex_input(ts: &mut Vec<Token>, lex: &mut Lexer<'a, T>, options: &RunOptions) {
+    pub fn lex_input(ts: &mut Vec<Token>, lex: &mut Lexer<'a, T>, options: &RunOptions) -> () {
         let mut t: Token = Default::default();
         while !t.is(TokenKind::Eoi) {
             lex.next(&mut t);
@@ -262,6 +293,10 @@ impl <'a, T: Read> Lexer<'a, T> {
                 if !options.drop_token { exit(ExitCode::LexerError); }
             } else if options.verbose {
                 eprintln!("Lexed token '{}'", t.to_string());
+            }
+            if t.is(TokenKind::Comment) || t.is(TokenKind::Eol) {
+                // Drop the comments and end of lines before parsing
+                continue;
             }
             ts.push(t.clone());
         }

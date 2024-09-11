@@ -1,12 +1,11 @@
-// RUN: @calcc --nomain --notarget -S -O0 %s -o %t0.ll  &&  @clang -O0 -o %t0.out %t0.ll  &&  %t0.out 3 4 5  | @filecheck %s
-// RUN: @calcc --nomain --notarget -S -O3 %s -o %t1.ll  &&  @clang -O0 -o %t1.out %t1.ll  &&  %t1.out 3 4 5  | @filecheck %s
-// RUN: @calcc --nomain --notarget -S -O0 %s -o %t2.ll  &&  @clang -O0 -o %t2.out %t2.ll  &&  %t2.out 6 8 10 | @filecheck %s
-// RUN: @calcc --nomain --notarget -S -O3 %s -o %t3.ll  &&  @clang -O0 -o %t3.out %t3.ll  &&  %t3.out 6 8 10 | @filecheck %s
+// RUN: @calcc -S -O0 %s -o %t0.ll  &&  @clang -O0 -o %t0.out %t0.ll  &&  %t0.out 3 4 5  | @filecheck %s
+// RUN: @calcc -S -O3 %s -o %t1.ll  &&  @clang -O0 -o %t1.out %t1.ll  &&  %t1.out 3 4 5  | @filecheck %s
+// RUN: @calcc -S -O0 %s -o %t2.ll  &&  @clang -O0 -o %t2.out %t2.ll  &&  %t2.out 6 8 10 | @filecheck %s
+// RUN: @calcc -S -O3 %s -o %t3.ll  &&  @clang -O0 -o %t3.out %t3.ll  &&  %t3.out 6 8 10 | @filecheck %s
 
 // CHECK:   calcc_main result: 0
 
 // TODO: Comments are not implemented
-// XFAIL: *
 
 // Implement Pythagorean theorem check (for integer triangles): 0 result => passing check
 with: a,b,c: c*c - (a*a + b*b)
