@@ -10,3 +10,6 @@ llvm-sys = { version = "=181.1.1", features = ["force-dynamic"] }
 
 [dev-dependencies]
 lit = "1.0.4"
+
+[lints.clippy]
+unused_unit = "allow"

@@ -21,6 +21,8 @@ use std::ffi::c_int;
 use std::ffi::c_uint;
 use std::ffi::c_ulonglong;
 use std::ffi::CStr;
+use std::fmt;
+use std::fmt::Display;
 use std::ptr;
 
 use crate::exit_code;
@@ -36,10 +38,7 @@ pub struct FunctionSignature {
 
 impl FunctionSignature {
     pub fn new(t_ret: LLVMTypeRef, params: Vec<LLVMTypeRef>) -> Self {
-        FunctionSignature{
-            t_ret: t_ret,
-            params: params,
-        }
+        FunctionSignature{t_ret, params}
     }
 }
 
@@ -68,14 +67,14 @@ impl <'a> ModuleBundle<'a> {
                 builder: b,
                 context: c,
                 module: m,
-                name: name,
+                name,
                 scope: Scope::new(),
                 t_i32: LLVMInt32TypeInContext(c),
                 t_i64: LLVMInt64TypeInContext(c),
                 t_opaque: LLVMPointerTypeInContext(c, 0 as c_uint),
                 f: None,
                 f_sig: None,
-                verbose: verbose,
+                verbose,
             }
         };
         bundle
@@ -102,7 +101,7 @@ impl <'a> ModuleBundle<'a> {
             let t_f = LLVMFunctionType(t_ret, params.as_mut_ptr(), params.len() as c_uint, is_va_arg as LLVMBool);
             LLVMAddFunction(self.module, name.as_ptr() as *const c_char, t_f)
         };
-        self.insert_value(&name, value);
+        self.insert_value(name, value);
         value
     }
 
@@ -123,47 +122,13 @@ impl <'a> ModuleBundle<'a> {
         }
     }
 
-    /// Kludge! LLVMGetTypeName2 returned null pointers.
-    //pub fn from_type_name(&self, name: *const c_char) -> LLVMTypeRef {
-    //  let c_string = unsafe { CStr::from_ptr(name) };
-    //  let s = c_string.to_str().unwrap();
-    //  match s {
-    //      "i32"   => self.t_i32,
-    //      "i64"   => self.t_i64,
-    //      "ptr"   => self.t_opaque,
-    //      _       => {
-    //          eprintln!("Type conversion for '{}' unimplemented", s);
-    //          exit(ExitCode::ModuleError);
-    //      },
-    //  }
-    //}
-
-    /// Kludge! Workaround for verifier errors from unmatched module contexts for LLVMTypeRef.
-    //pub fn get_f_sig_from_context(&mut self, f_sig: &FunctionSignature) -> FunctionSignature {
-    //  let t_ret: LLVMTypeRef = unsafe {
-    //      let name: *mut c_char = LLVMPrintTypeToString(f_sig.t_ret);
-    //      self.from_type_name(name)
-    //  };
-    //  assert!(!t_ret.is_null());
-    //  let mut params: Vec<LLVMTypeRef> = Vec::new();
-    //  for param in &f_sig.params {
-    //      let t: LLVMTypeRef = unsafe {
-    //          let name: *mut c_char = LLVMPrintTypeToString(*param);
-    //          self.from_type_name(name)
-    //      };
-    //      assert!(!t.is_null());
-    //      params.push(t);
-    //  }
-    //  FunctionSignature::new(t_ret, params)
-    //}
-
     pub fn get_value(&mut self, name: &String) -> LLVMValueRef {
         self.scope.get_value(name, self.verbose)
     }
 
     pub fn insert_value(&mut self, name: &String, value: LLVMValueRef) -> () {
         let result = self.scope.add_var(name, value, self.verbose);
-        if !result.is_none() {
+        if result.is_some() {
             eprintln!("Tried to declare value {} more than once", name);
             exit(ExitCode::ModuleError);
         }
@@ -175,20 +140,6 @@ impl <'a> ModuleBundle<'a> {
             other.module,
         )};
         result == false as LLVMBool
-    }
-
-    pub fn to_string(&self) -> String {
-        let c_string_ptr: *mut c_char = unsafe {
-            LLVMPrintModuleToString(self.module)
-        };
-        let c_string: &CStr = unsafe {
-            CStr::from_ptr(c_string_ptr)
-        };
-        let string: String = String::from(c_string.to_str().unwrap());
-        unsafe {
-            LLVMDisposeMessage(c_string_ptr)
-        };
-        string
     }
 
     pub fn value_name(s: &str) -> String {
@@ -207,7 +158,7 @@ impl <'a> ModuleBundle<'a> {
         unsafe {
             let c_string = CStr::from_ptr(error_ptr as *const c_char);
             let s = c_string.to_str().expect("Unable to read module verification error string");
-            if s.len() > 0 {
+            if !s.is_empty() {
                 eprintln!("{}", s);
             }
             LLVMDisposeMessage(error_ptr);
@@ -224,6 +175,23 @@ impl <'a> ModuleBundle<'a> {
         }
     }
 }
+
+impl <'a> Display for ModuleBundle<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let c_string_ptr: *mut c_char = unsafe {
+            LLVMPrintModuleToString(self.module)
+        };
+        let c_string: &CStr = unsafe {
+            CStr::from_ptr(c_string_ptr)
+        };
+        let string: String = String::from(c_string.to_str().unwrap());
+        unsafe {
+            LLVMDisposeMessage(c_string_ptr)
+        };
+        write!(f, "{}", string)
+    }
+}
+
 
 impl <'a> Drop for ModuleBundle<'a> {
     fn drop(&mut self) -> () {
@@ -267,7 +235,7 @@ impl Scope {
                 if verbose {
                     eprintln!("Found var '{}' in scope", var);
                 };
-                value.clone()
+                *value
             },
             None        => {
                 eprintln!("Unexpected unbound var '{}' in scope", var);
@@ -277,7 +245,7 @@ impl Scope {
     }
 
     pub fn next_value_name(&mut self) -> String {
-        let name = String::from(format!("v{}\0", self.value_idx));
+        let name = format!("v{}\0", self.value_idx);
         self.value_idx += 1;
         name
     }

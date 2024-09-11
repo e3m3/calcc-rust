@@ -55,8 +55,9 @@ pub fn op_to_string(op: &Operator) -> String {
 
 pub type Vars = Vec<String>;
 
-#[derive(Clone)]
+#[derive(Clone,Default)]
 pub enum ExprKind<'a> {
+    #[default]
     Undefined,
     Factor(Factor),
     BinaryOp(Operator, &'a Expr<'a>, &'a Expr<'a>),
@@ -67,12 +68,6 @@ pub fn vars_to_string(vars: &Vars) -> String {
     format!("Vars([{}])", vars.join(","))
 }
 
-impl <'a> Default for ExprKind<'a> {
-    fn default() -> Self {
-        ExprKind::Undefined
-    }
-}
-
 pub struct Expr<'a> {
     expr: ExprKind<'a>,
     vars: usize,
@@ -80,7 +75,7 @@ pub struct Expr<'a> {
 
 impl <'a> Expr<'a> {
     pub fn new(expr: ExprKind<'a>, n: usize) -> Self {
-        Expr{expr: expr, vars: n}
+        Expr{expr, vars: n}
     }
 
     pub fn new_number(n: i64) -> Self {

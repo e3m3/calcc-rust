@@ -32,7 +32,7 @@ impl ParserIter {
             token: Default::default(),
             vars: Vec::new(),
             position: 0,
-            end: end,
+            end,
         }
     }
 
@@ -48,14 +48,11 @@ pub struct Parser<'a> {
 
 impl <'a> Parser<'a> {
     pub fn new(tokens: &'a Vec<Token>, options: &'a RunOptions) -> Self {
-        if tokens.len() < 1 {
+        if tokens.is_empty() {
             eprintln!("Found empty program while parsing");
             exit(ExitCode::ParserError);
         }
-        Parser{
-            tokens: tokens,
-            options: options,
-        }
+        Parser{tokens, options}
     }
 
     pub fn iter(&self) -> ParserIter {
@@ -86,10 +83,8 @@ impl <'a> Parser<'a> {
         false
     }
     
-    fn expect(&self, iter: &mut ParserIter, k: TokenKind, add_var: bool) {
-        if self.consume(iter, k, add_var) {
-            return
-        } else {
+    fn expect(&self, iter: &mut ParserIter, k: TokenKind, add_var: bool) -> () {
+        if !self.consume(iter, k, add_var) {
             eprintln!("Expected '{}' token at position {}", token_kind_to_string(k), iter.position);
             exit(ExitCode::ParserError);
         }
@@ -101,13 +96,14 @@ impl <'a> Parser<'a> {
 
     fn get_token(&self, iter: &mut ParserIter) -> &Token {
         if iter.has_next() {
-            &self.tokens.get(iter.position).unwrap()
+            self.tokens.get(iter.position).unwrap()
         } else {
             eprintln!("Token out of bounds at {}", iter.position);
             exit(ExitCode::ParserError);
         }
     }
 
+    #[allow(clippy::redundant_allocation)]
     fn parse_calc(&self, iter: &mut ParserIter) -> Box<&mut dyn Ast> {
         let mut expr: Box<Expr>;
         if self.consume(iter, TokenKind::With, false) {
@@ -159,7 +155,7 @@ impl <'a> Parser<'a> {
         e_left
     }
 
-    fn is_hex_number(text: &String) -> bool {
+    fn is_hex_number(text: &str) -> bool {
         text.len() >= 2 && "0x" == &text[0..2]
     }
 
@@ -213,6 +209,7 @@ impl <'a> Parser<'a> {
         }
     }
 
+    #[allow(clippy::redundant_allocation)]
     pub fn parse_input(ret: &mut Box<&'a mut dyn Ast>, parser: &'a mut Parser<'a>, options: &RunOptions) {
         let mut iter = parser.iter();
         *ret = parser.parse_calc(&mut iter);

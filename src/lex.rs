@@ -1,6 +1,8 @@
 // Copyright 2024, Giordano Salvador
 // SPDX-License-Identifier: BSD-3-Clause
 
+use std::fmt;
+use std::fmt::Display;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
@@ -12,8 +14,10 @@ use exit_code::exit;
 use exit_code::ExitCode;
 use options::RunOptions;
 
-#[derive(Clone,Copy,Eq,PartialEq)]
+#[derive(Clone,Copy,Default,Eq,PartialEq)]
 pub enum TokenKind {
+    #[default]
+    Unknown,
     Comma,
     Comment,
     Colon,
@@ -27,7 +31,6 @@ pub enum TokenKind {
     Plus,
     Slash,
     Star,
-    Unknown,
     With,
 }
 
@@ -51,12 +54,6 @@ pub fn token_kind_to_string(k: TokenKind) -> String {
     })
 }
 
-impl Default for TokenKind {
-    fn default() -> Self {
-        TokenKind::Unknown
-    }
-}
-
 #[derive(Clone)]
 pub struct Token {
     pub kind: TokenKind,
@@ -71,7 +68,7 @@ impl Default for Token {
 
 impl Token {
     pub fn new(k: TokenKind, text: String) -> Self {
-        Token{kind: k, text: text}
+        Token{kind: k, text}
     }
 
     pub fn is(&self, k: TokenKind) -> bool {
@@ -89,9 +86,11 @@ impl Token {
         }
         f(self, false, ks)
     }
+}
 
-    pub fn to_string(&self) -> String {
-        format!("{}:{}", token_kind_to_string(self.kind), self.text)
+impl Display for Token {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}:{}", token_kind_to_string(self.kind), self.text)
     }
 }
 
@@ -105,14 +104,13 @@ pub struct Lexer<'a, T: Read> {
 
 impl <'a, T: Read> Lexer<'a, T> {
     pub fn new(readable: T, options: &'a RunOptions) -> Self {
-        let lexer = Lexer{
+        Lexer{
             buffer: BufReader::new(readable),
             line: String::new(),
             line_count: 0,
             position: 0,
-            options: options,
-        };
-        lexer
+            options,
+        }
     }
 
     fn has_next(&mut self) -> bool {
@@ -192,14 +190,12 @@ impl <'a, T: Read> Lexer<'a, T> {
         if Self::is_whitespace(c) {
             self.form_token(t, pos_start, pos_start + 1, TokenKind::Eol);
         } else if Self::is_digit(c) {
-            if c == '0' {
-                if self.has_next_in_line(pos_start + 1) {
-                    c = self.next_char_in_line(pos_start + 1);
-                    if c == 'x' {
-                        let pos_end: usize = self.collect_token_sequence(pos_start + 2, Self::is_hex_digit);
-                        self.form_token(t, pos_start, pos_end, TokenKind::Number);
-                        return;
-                    }
+            if c == '0' && self.has_next_in_line(pos_start + 1) {
+                c = self.next_char_in_line(pos_start + 1);
+                if c == 'x' {
+                    let pos_end: usize = self.collect_token_sequence(pos_start + 2, Self::is_hex_digit);
+                    self.form_token(t, pos_start, pos_end, TokenKind::Number);
+                    return;
                 }
             }
             let pos_end: usize = self.collect_token_sequence(pos_start + 1, Self::is_digit);
@@ -269,7 +265,7 @@ impl <'a, T: Read> Lexer<'a, T> {
     }
 
     fn is_digit(c: char) -> bool {
-        c >= '0' && c <= '9'
+        c.is_ascii_digit()
     }
 
     fn is_ident(c: char) -> bool {
@@ -277,11 +273,19 @@ impl <'a, T: Read> Lexer<'a, T> {
     }
 
     fn is_hex_digit(c: char) -> bool {
-        (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')
+        Self::is_digit(c) || Self::is_letter_lower(c) || Self::is_letter_upper(c)
+    }
+
+    fn is_letter_lower(c:char) -> bool {
+        c.is_ascii_lowercase()
+    }
+
+    fn is_letter_upper(c:char) -> bool {
+        c.is_ascii_uppercase()
     }
 
     fn is_letter(c: char) -> bool {
-        (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
+        Self::is_letter_lower(c) || Self::is_letter_upper(c) || c == '_'
     }
 
     pub fn lex_input(ts: &mut Vec<Token>, lex: &mut Lexer<'a, T>, options: &RunOptions) -> () {
@@ -292,7 +296,7 @@ impl <'a, T: Read> Lexer<'a, T> {
                 eprintln!("Found unknown token '{}' in lexer", t.text);
                 if !options.drop_token { exit(ExitCode::LexerError); }
             } else if options.verbose {
-                eprintln!("Lexed token '{}'", t.to_string());
+                eprintln!("Lexed token '{}'", t);
             }
             if t.is(TokenKind::Comment) || t.is(TokenKind::Eol) {
                 // Drop the comments and end of lines before parsing

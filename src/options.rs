@@ -17,7 +17,7 @@ pub struct RunOptions {
 impl RunOptions {
     pub fn new() -> Self {
         RunOptions{
-            codegen_type: CodeGenType::BYTECODE,
+            codegen_type: CodeGenType::Bytecode,
             drop_token: false,
             lex_exit: false,
             no_main: false,
@@ -52,6 +52,6 @@ pub fn opt_level_to_str(opt_level: OptLevel) -> String {
 #[repr(u8)]
 #[derive(Clone,Copy,PartialEq)]
 pub enum CodeGenType {
-    LLVMIR      = 0,
-    BYTECODE    = 1,
+    Llvmir      = 0,
+    Bytecode    = 1,
 }

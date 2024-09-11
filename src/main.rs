@@ -95,12 +95,12 @@ fn output_type_to_string(t: OutputType) -> String {
 }
 
 fn parse_args<'a>(
-    args: &'a Vec<String>,
+    args: &'a [String],
     input: &mut InputType<'a>,
     output: &mut OutputType<'a>,
     options: &mut RunOptions
 ) {
-    let _bin_name: &String = args.get(0).unwrap();
+    let _bin_name: &String = args.first().unwrap();
     let mut arg: &'a String;
     let mut i: usize = 1;
 
@@ -114,7 +114,7 @@ fn parse_args<'a>(
             "-h"            => help(ExitCode::Ok),
             "--help"        => help(ExitCode::Ok),
             "--lex"         => options.lex_exit = true,
-            "--llvmir"      => options.codegen_type = CodeGenType::LLVMIR,
+            "--llvmir"      => options.codegen_type = CodeGenType::Llvmir,
             "--nomain"      => options.no_main = true,
             "--notarget"    => options.no_target = true,
             "-o"            => *output = OutputType::File(parse_arg_after(args, &mut i)),
@@ -124,7 +124,7 @@ fn parse_args<'a>(
             "-O3"           => options.opt_level = OptLevel::O3,
             "--parse"       => options.parse_exit = true,
             "--sem"         => options.sem_exit = true,
-            "-S"            => options.codegen_type = CodeGenType::LLVMIR,
+            "-S"            => options.codegen_type = CodeGenType::Llvmir,
             "-v"            => options.verbose = true,
             "--verbose"     => options.verbose = true,
             "--version"     => print_pkg_info(true),
@@ -152,10 +152,10 @@ fn parse_args<'a>(
             if ext != ".bc" && ext != ".ll" {
                 eprintln!("Output name '{}' should end in '.bc' or '.ll", f);
                 exit(ExitCode::ArgParseError);
-            } else if ext == ".bc" && options.codegen_type == CodeGenType::LLVMIR {
+            } else if ext == ".bc" && options.codegen_type == CodeGenType::Llvmir {
                 eprintln!("LLVM IR file type (with '-S' flag) should match output name ('.ll' extension)");
                 exit(ExitCode::ArgParseError);
-            } else if ext == ".ll" && options.codegen_type == CodeGenType::BYTECODE {
+            } else if ext == ".ll" && options.codegen_type == CodeGenType::Bytecode {
                 eprintln!("Bytecode file type (missing '-S' flag) should match output name ('.bc' extension)");
                 exit(ExitCode::ArgParseError);
             }
@@ -167,7 +167,7 @@ fn parse_args<'a>(
     }
 }
 
-fn parse_arg_after<'a>(args: &'a Vec<String>, i: &mut usize) -> &'a str {
+fn parse_arg_after<'a>(args: &'a [String], i: &mut usize) -> &'a str {
     let name_option = args.get(*i).unwrap();
     match args.get(*i + 1) {
         Some(arg)   => {
@@ -205,15 +205,13 @@ fn parse_arg_complex<'a>(
                 }
             }
         }
+    } else if *input != InputType::None {
+        eprintln!("Found more than one input ('{}' and '{}')", input_type_to_string(*input), arg);
+        help(ExitCode::ArgParseError);
+    } else if arg.len() == 1 && lead_char == '-' {
+        *input = InputType::Stdin;
     } else {
-        if *input != InputType::None {
-            eprintln!("Found more than one input ('{}' and '{}')", input_type_to_string(*input), arg);
-            help(ExitCode::ArgParseError);
-        } else if arg.len() == 1 && lead_char == '-' {
-            *input = InputType::Stdin;
-        } else {
-            *input = InputType::File(arg.as_str());
-        }
+        *input = InputType::File(arg.as_str());
     }
 }
 
@@ -226,11 +224,11 @@ fn write_module(bundle: &mut ModuleBundle, codegen_type: CodeGenType, output: &O
     match *output {
         OutputType::Stdout  => {
             match codegen_type {
-                CodeGenType::LLVMIR => {
+                CodeGenType::Llvmir => {
                     let string: String = bundle.to_string();
                     println!("{}", string);
                 },
-                CodeGenType::BYTECODE => {
+                CodeGenType::Bytecode => {
                     eprintln!("Unimplemented: writing bytecode to Stdout");
                     return false;
                 },
@@ -238,7 +236,7 @@ fn write_module(bundle: &mut ModuleBundle, codegen_type: CodeGenType, output: &O
         },
         OutputType::File(f) => {
             match codegen_type {
-                CodeGenType::LLVMIR => {
+                CodeGenType::Llvmir => {
                     let string: String = bundle.to_string();
                     let mut file = match File::create(f) {
                         Ok(file)    => file,
@@ -255,12 +253,12 @@ fn write_module(bundle: &mut ModuleBundle, codegen_type: CodeGenType, output: &O
                         }
                     }
                 },
-                CodeGenType::BYTECODE => bundle.write_bitcode_to_file(f),
+                CodeGenType::Bytecode => bundle.write_bitcode_to_file(f),
             }
         },
     }
 
-    return true;
+    true
 }
 
 fn main() -> ! {
@@ -302,7 +300,7 @@ fn main() -> ! {
 
     let module_name_irgen = String::from("calcc");
     let mut module_irgen = ModuleBundle::new(&module_name_irgen, options.verbose);
-    let irgen_status: bool = IRGen::gen(*ast, &mut module_irgen, &options);
+    let irgen_status: bool = IRGen::gen(*ast, &mut module_irgen);
     assert!(irgen_status);
     let irgen_verify: bool = module_irgen.verify_module();
     if !irgen_verify {
@@ -321,7 +319,7 @@ fn main() -> ! {
         //let f_sig = module_main.get_f_sig_from_context(&module_irgen.f_sig.clone().unwrap());
         let f_sig = &module_irgen.f_sig.clone().unwrap();
 
-        let maingen_status: bool = MainGen::gen(&mut module_main, &f_sig, &options);
+        let maingen_status: bool = MainGen::gen(&mut module_main, f_sig);
         assert!(maingen_status);
 
         // NOTE: Linking modules causes verifier errors for unmatched contexts of LLVMTypeRef. Skip verification.

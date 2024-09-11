@@ -55,7 +55,7 @@ impl Target {
             if !error_ptr.is_null() {
                 let c_string = CStr::from_ptr(error_ptr as *const c_char);
                 let s = c_string.to_str().expect("Unable to read target triple error string");
-                if s.len() > 0 {
+                if !s.is_empty() {
                     eprintln!("{}", s);
                     LLVMDisposeMessage(error_ptr);
                     exit(ExitCode::TargetError);
@@ -68,10 +68,7 @@ impl Target {
             eprintln!("Failed to lookup target for target string '{}'", Self::string_from(&string));
             exit(ExitCode::TargetError);
         }
-        Target {
-            string: string,
-            target: target,
-        }
+        Target{string, target}
     }
 
     pub fn get_string(&self) -> String {
@@ -136,47 +133,8 @@ impl <'a> TargetMachine<'a> {
             machine_options,
         )};
         let data_layout = unsafe { LLVMCreateTargetDataLayout(machine) };
-        TargetMachine {
-            data_layout: data_layout,
-            machine: machine,
-            machine_options: machine_options,
-            target: target,
-        }
+        TargetMachine{data_layout, machine, machine_options, target}
     }
-
-    // NOTE: Unused because the optimization level settings are not respected by the backend machine codegen.
-    //pub fn run_opt_to_file(&mut self, bundle: &mut ModuleBundle, name: &String, codegen_type: CodeGenType) -> bool {
-    //    let mut error_ptr: *mut c_char = ptr::null_mut();
-    //    let result: LLVMBool = unsafe {
-    //        LLVMSetModuleDataLayout(bundle.module, self.data_layout);
-    //        LLVMSetTarget(bundle.module, self.target.string);
-    //        let result: LLVMBool = LLVMTargetMachineEmitToFile(
-    //            self.machine,
-    //            bundle.module,
-    //            name.as_ptr() as *const c_char,
-    //            match codegen_type {
-    //                CodeGenType::Assembly   => LLVMCodeGenFileType::LLVMAssemblyFile,
-    //                CodeGenType::Object     => LLVMCodeGenFileType::LLVMObjectFile,
-    //            },
-    //            &mut error_ptr as *mut *mut c_char,
-    //        );
-    //        result
-    //    };
-    //  let maingen_string: String = bundle.to_string();
-    //  println!("{}", maingen_string);
-    //    if !error_ptr.is_null() { unsafe {
-    //        let c_string = CStr::from_ptr(error_ptr as *const c_char);
-    //        let s = c_string.to_str().expect("Unable to read codegen emit error string");
-    //        if s.len() > 0 {
-    //            eprintln!("{}", s);
-    //            LLVMDisposeMessage(error_ptr);
-    //            exit(ExitCode::TargetError);
-    //        } else {
-    //            LLVMDisposeMessage(error_ptr);
-    //        }
-    //    }}
-    //    result == true as LLVMBool
-    //}
 }
 
 impl <'a> Drop for TargetMachine<'a> {
@@ -196,7 +154,7 @@ pub struct PassBuilder {
 impl PassBuilder {
     pub fn new() -> Self {
         let builder = unsafe { LLVMCreatePassBuilderOptions() };
-        PassBuilder{builder: builder}
+        PassBuilder{builder}
     }
 
     pub fn run(

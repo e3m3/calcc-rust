@@ -15,7 +15,6 @@ use std::ffi::c_uint;
 use crate::ast;
 use crate::exit_code;
 use crate::module;
-use crate::options;
 
 use ast::Ast;
 use ast::AstGenerator;
@@ -29,19 +28,14 @@ use exit_code::exit;
 use exit_code::ExitCode;
 use module::FunctionSignature;
 use module::ModuleBundle;
-use options::RunOptions;
 
 pub struct IRGen<'a, 'b> {
     bundle:         &'a mut ModuleBundle<'b>,
-    _options:       &'a RunOptions,
 }
 
 impl <'a, 'b> IRGen<'a, 'b> {
-    pub fn new(bundle: &'a mut ModuleBundle<'b>, options: &'a RunOptions) -> Self {
-        IRGen{ 
-            bundle:         bundle,
-            _options:       options,
-        }
+    pub fn new(bundle: &'a mut ModuleBundle<'b>) -> Self {
+        IRGen{bundle}
     }
 
     fn gen_entry(&mut self, n: usize) -> LLVMBasicBlockRef {
@@ -131,7 +125,7 @@ impl <'a, 'b> IRGen<'a, 'b> {
     /// needed if longer multi-statement programs are implemented.
     fn gen_expr_withdecl(&mut self, vars: &Vars, e: &Expr) -> GenResult {
         let f = self.bundle.f.expect("Missing parent function");
-        for (i, var) in vars.into_iter().enumerate() {
+        for (i, var) in vars.iter().enumerate() {
             unsafe {
                 let alloca_value = self.bundle.gen_alloca(var.as_str(), self.bundle.t_i64);
                 let init_value = LLVMGetParam(f, i as c_uint);
@@ -141,8 +135,8 @@ impl <'a, 'b> IRGen<'a, 'b> {
         self.visit(e)
     }
 
-    pub fn gen(ast: &dyn Ast, bundle: &'a mut ModuleBundle<'b>, options: &'a RunOptions) -> bool {
-        let mut ir_gen = IRGen::new(bundle, options);
+    pub fn gen(ast: &dyn Ast, bundle: &'a mut ModuleBundle<'b>) -> bool {
+        let mut ir_gen = IRGen::new(bundle);
         let n = ast.get_vars();
         let bb = ir_gen.gen_entry(n);
         let ir_gen_result: GenResult = ast.accept_gen(&mut ir_gen);

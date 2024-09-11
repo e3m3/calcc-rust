@@ -20,11 +20,9 @@ use std::ffi::c_char;
 use std::ffi::c_uint;
 
 use crate::module;
-use crate::options;
 
 use module::FunctionSignature;
 use module::ModuleBundle;
-use options::RunOptions;
 
 static NAME_ATOLL       : &str = "atoll";
 static NAME_CALCC_MAIN  : &str = "calcc_main";
@@ -45,33 +43,29 @@ static NAME_ARGV        : &str = "vArgv";
 
 pub struct MainGen<'a, 'b> {
     bundle: &'a mut ModuleBundle<'b>,
-    _options: &'a RunOptions,
 }
 
 impl <'a, 'b> MainGen<'a, 'b> {
-    pub fn new(bundle: &'a mut ModuleBundle<'b>, options: &'a RunOptions) -> Self {
-        MainGen{
-            bundle: bundle,
-            _options: options,
-        }
+    pub fn new(bundle: &'a mut ModuleBundle<'b>) -> Self {
+        MainGen{bundle}
     }
 
-    pub fn gen(bundle: &'a mut ModuleBundle<'b>, callee_sig: &'a FunctionSignature, options: &'a RunOptions) -> bool {
-        let mut maingen: Self = Self::new(bundle, &options);
+    pub fn gen(bundle: &'a mut ModuleBundle<'b>, callee_sig: &'a FunctionSignature) -> bool {
+        let mut maingen: Self = Self::new(bundle);
         let _printf = maingen.declare_atoll();
         let _fprintf = maingen.declare_fprintf();
         let _printf = maingen.declare_printf();
         let _stderr = maingen.declare_stderr();
-        let _calcc_main = maingen.declare_calcc_main(&callee_sig);
+        let _calcc_main = maingen.declare_calcc_main(callee_sig);
         let bb_entry = maingen.make_entry_block();
         let bb_err = maingen.make_err_block();
         let bb_body = maingen.make_body_block();
         let bb_ret = maingen.make_ret_block();
         maingen.declare_global_strings(); // NOTE: Needs to be called after first use of builder
-        let callee_values = maingen.gen_entry_stack(bb_entry, &callee_sig);
+        let callee_values = maingen.gen_entry_stack(bb_entry, callee_sig);
         maingen.gen_entry_branch(bb_entry, bb_err, bb_body, callee_sig.params.len());
         maingen.gen_err_block(bb_err, bb_ret, callee_sig.params.len());
-        maingen.gen_body(bb_body, bb_ret, &callee_sig, &callee_values);
+        maingen.gen_body(bb_body, bb_ret, callee_sig, &callee_values);
         maingen.gen_ret(bb_ret);
         true
     }
@@ -168,7 +162,7 @@ impl <'a, 'b> MainGen<'a, 'b> {
         bb_body: LLVMBasicBlockRef,
         bb_ret: LLVMBasicBlockRef,
         callee_sig: &'a FunctionSignature,
-        callee_values: &Vec<LLVMValueRef>
+        callee_values: &[LLVMValueRef]
     ) -> () {
         unsafe { LLVMPositionBuilderAtEnd(self.bundle.builder, bb_body); }
         let name_retval = ModuleBundle::value_name(NAME_RETVAL);
@@ -368,11 +362,11 @@ impl <'a, 'b> MainGen<'a, 'b> {
     fn gen_call_calcc_main(
         &mut self,
         callee_sig: &'a FunctionSignature,
-        callee_values: &Vec<LLVMValueRef>
+        callee_values: &[LLVMValueRef]
     ) -> LLVMValueRef {
         let name_calcc = ModuleBundle::value_name(NAME_CALCC_MAIN);
         let value_calcc = self.bundle.get_value(&name_calcc);
-        let value_result = callee_values.get(0).unwrap();
+        let value_result = callee_values.first().unwrap();
         let mut args: Vec<LLVMValueRef> = Vec::new();
         for i in 1..callee_values.len() {
             let name = self.bundle.scope.next_value_name();
