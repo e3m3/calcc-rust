@@ -4,6 +4,7 @@ extern crate lit;
 #[cfg(test)]
 mod tests{
     use std::env;
+    use std::path::Path;
     use std::path::PathBuf;
 
     fn path_to_string(path: &PathBuf) -> String {
@@ -29,7 +30,7 @@ mod tests{
         lit::run::tests(
             lit::event_handler::Default::new(),
             |config: &mut lit::config::Config| {
-                config.add_search_path("tests/lit-rust");
+                config.add_search_path(Path::new("tests").join("lit-rust").to_str().unwrap());
                 config.add_extension("calc");
                 config.constants.insert("calcc".to_owned(), get_calcc());
             }

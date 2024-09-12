@@ -33,15 +33,32 @@ mod tests{
     }
 
     fn get_shell() -> String {
-        String::from(if cfg!(target_os = "linux") {"bash"} else {"cmd"})
+        String::from(
+            if cfg!(target_os = "linux") || cfg!(target_os = "macos") {
+                "bash"
+            } else if cfg!(target_os = "windows") {
+                "cmd"
+            } else {
+                eprintln!("Unexpected target_os");
+                assert!(false);
+                ""
+            }
+        )
     }
 
     fn get_lit() -> String {
-        if cfg!(target_os = "linux") {
+        let append_lit: fn(&Path) -> String = |path| {
+            String::from(path.join("bin").join("lit").to_str().unwrap())
+        };
+        if cfg!(target_os = "linux") || cfg!(target_os = "macos") {
             match env::var("PYTHON_VENV_PATH") {
-                Ok(path)    => format!("{}/bin/lit", path),
-                Err(_)      => String::from("/usr/bin/lit"),
+                Ok(path)    => append_lit(Path::new(&path)),
+                Err(_)      => append_lit(Path::new("/usr")),
             }
+        } else if cfg!(target_os = "windows") {
+            eprintln!("Windows not supported");
+            assert!(false);
+            String::new()
         } else {
             eprintln!("OS not supported");
             assert!(false);
@@ -51,7 +68,7 @@ mod tests{
 
     #[test]
     fn lit() {
-        if !cfg!(target_os = "linux") {
+        if !cfg!(target_os = "linux") && !cfg!(target_os = "macos") && !cfg!(target_os = "windows") {
             eprintln!("OS not yet supported.");
             assert!(false);
         }
@@ -98,6 +115,6 @@ mod tests{
         eprintln!("Lit stderr:\n{}", std::str::from_utf8(stderr).unwrap());
         println!("Lit stdout:\n{}", std::str::from_utf8(stdout).unwrap());
 
-        assert!(stderr.len() == 0);
+        assert!(stderr.is_empty());
     }
 }
