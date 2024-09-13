@@ -1,8 +1,10 @@
-// RUN: @calcc --verbose --lex -e -9    2>&1    | @filecheck %s --check-prefix=CHECK_A
-// RUN: @calcc --verbose --lex -e "- 9" 2>&1    | @filecheck %s --check-prefix=CHECK_B
-// RUN: @calcc --verbose --lex -e 0xAF  2>&1    | @filecheck %s --check-prefix=CHECK_C
-// RUN: @calcc --verbose --lex -e 0x0c1 2>&1    | @filecheck %s --check-prefix=CHECK_D
-// RUN: @calcc --verbose --lex -e 012   2>&1    | @filecheck %s --check-prefix=CHECK_E
+// RUN:     @calcc --verbose --lex -e -9    2>&1    | @filecheck %s --check-prefix=CHECK_A
+// RUN:     @calcc --verbose --lex -e "- 9" 2>&1    | @filecheck %s --check-prefix=CHECK_B
+// RUN:     @calcc --verbose --lex -e 0xAF  2>&1    | @filecheck %s --check-prefix=CHECK_C
+// RUN:     @calcc --verbose --lex -e 0x0c1 2>&1    | @filecheck %s --check-prefix=CHECK_D
+// RUN:     @calcc --verbose --lex -e 012   2>&1    | @filecheck %s --check-prefix=CHECK_E
+// RUN: not @calcc --verbose --lex -e 0x0z3 2>&1    | @filecheck %s --check-prefix=CHECK_F
+// RUN: not @calcc --verbose --lex -e 140_3 2>&1    | @filecheck %s --check-prefix=CHECK_G
 
 // CHECK_A: Processing input 'Expression:-9'
 // CHECK_A: Read 2 bytes from buffer at line 0
@@ -46,3 +48,19 @@
 // CHECK_E: Found char '2' in line 0 at pos 2
 // CHECK_E: Lexed token 'Number:012'
 // CHECK_E: Lexed token 'Eoi:'
+
+// CHECK_F: Processing input 'Expression:0x0z3'
+// CHECK_F: Read 5 bytes from buffer at line 0
+// CHECK_F: Found char '0' in line 0 at pos 0
+// CHECK_F: Found char 'x' in line 0 at pos 1
+// CHECK_F: Found char '0' in line 0 at pos 2
+// CHECK_F: Found char 'z' in line 0 at pos 3
+// CHECK_F: Found invalid suffix 'z' for number in expression
+
+// CHECK_G: Processing input 'Expression:140_3'
+// CHECK_G: Read 5 bytes from buffer at line 0
+// CHECK_G: Found char '1' in line 0 at pos 0
+// CHECK_G: Found char '4' in line 0 at pos 1
+// CHECK_G: Found char '0' in line 0 at pos 2
+// CHECK_G: Found char '_' in line 0 at pos 3
+// CHECK_G: Found invalid suffix '_' for number in expression

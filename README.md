@@ -19,11 +19,69 @@ Accepted factors in the grammar have been extended for convenience (see `src/{le
 The output of the compiler is LLVM IR or LLVM bytecode [[6]].
 
 
-##  Grammar
+##  Language
+
+### Lexer
 
 ```text
-calc : ("with" ":" ident ("," ident)* ":" )? expr
+ident           ::= is_letter+ (is_letter | is_number)*
+number          ::= digit+ | (`0x` hex_digit+)
+digit           ::= [0-9]
+hex_digit       ::= [a-fA-F0-9]
+letter          ::= letter_lower | letter_upper | `_`
+letter_lower    ::= [a-z]
+letter_upper    ::= [A-Z]
+whitespace      ::= ` ` | `\r` | `\n` | `\t`
+
+any             ::= _
+token           ::= { tokenkind, text }
+tokenkind       ::=
+    | Unknown
+    | Comma
+    | Comment
+    | Colon
+    | Eoi
+    | Eol
+    | Ident
+    | Minus
+    | Number
+    | ParenL
+    | ParenR
+    | Plus
+    | Slash
+    | Star
+    | With
+text            ::=
+    | ``
+    | `,`
+    | `/``/` any*
+    | `:`
+    | ident
+    | `-`
+    | number
+    | `(`
+    | `)`
+    | `+`
+    | `/`
+    | `*`
+    | `with`
 ```
+
+### Grammar
+
+```text
+calc    ::= ( With Colon Ident (Comma Ident)* Colon )? expr
+expr    ::= term ( Plus | Minus ) term
+factor  ::= Minus? ( Number | Ident | ParenL expr ParenR )
+term    ::= factor ( Slash | Star ) factor
+```
+
+Notes:
+
+*   The grammar rules above use the `tokenkind` as a shorthand for a `token` object as described by the lexer rules.
+
+*   In the AST, a factor with a leading `Minus` token is represented as a subtraction expression where the left term
+    is `Number` with the constant value `0`.
 
 
 ##  Prequisites

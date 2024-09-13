@@ -180,6 +180,16 @@ impl <'a, T: Read> Lexer<'a, T> {
         pos_end
     }
 
+    fn check_suffix(&self, pos: usize) -> () {
+        if self.has_next_in_line(pos) {
+            let c: char = self.next_char_in_line(pos);
+            if !Self::is_whitespace(c) && !Self::is_other(c) {
+                eprintln!("Found invalid suffix '{}' for number in expression", c);
+                exit(ExitCode::LexerError);
+            }
+        }
+    }
+
     fn next_in_line(&mut self, t: &mut Token) -> () {
         let (mut c, mut pos_start): (char, usize) = ('\0', self.position);
         while self.has_next_in_line(pos_start) {
@@ -194,11 +204,13 @@ impl <'a, T: Read> Lexer<'a, T> {
                 c = self.next_char_in_line(pos_start + 1);
                 if c == 'x' {
                     let pos_end: usize = self.collect_token_sequence(pos_start + 2, Self::is_hex_digit);
+                    self.check_suffix(pos_end);
                     self.form_token(t, pos_start, pos_end, TokenKind::Number);
                     return;
                 }
             }
             let pos_end: usize = self.collect_token_sequence(pos_start + 1, Self::is_digit);
+            self.check_suffix(pos_end);
             self.form_token(t, pos_start, pos_end, TokenKind::Number);
         } else if Self::is_letter(c) {
             let pos_end: usize = self.collect_token_sequence(pos_start + 1, Self::is_ident);
@@ -260,6 +272,20 @@ impl <'a, T: Read> Lexer<'a, T> {
         c == '/'
     }
 
+    fn is_other(c: char) -> bool {
+        match c {
+            ',' => true,
+            ':' => true,
+            '-' => true,
+            '(' => true,
+            ')' => true,
+            '+' => true,
+            '/' => true,
+            '*' => true,
+            _   => false,
+        }
+    }
+
     fn is_whitespace(c: char) -> bool {
         c == ' ' || c == '\t' || c == '\r' || c == '\n'
     }
@@ -273,7 +299,7 @@ impl <'a, T: Read> Lexer<'a, T> {
     }
 
     fn is_hex_digit(c: char) -> bool {
-        Self::is_digit(c) || Self::is_letter_lower(c) || Self::is_letter_upper(c)
+        Self::is_digit(c) || ('a'..='f').contains(&c) || ('A'..='F').contains(&c)
     }
 
     fn is_letter_lower(c:char) -> bool {
