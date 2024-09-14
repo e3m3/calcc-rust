@@ -8,7 +8,7 @@ eval "$(${HOMEBREW_HOME}/bin/brew shellenv)"
 LLVM_VER=18
 PYTHON_VER=3.12
 
-brew install -y python@${PYTHON_VER} llvm@${LLVM_VER} lit rustup
+brew install python@${PYTHON_VER} llvm@${LLVM_VER} lit rustup
 
 RUSTUP_CHANNEL=stable
 RUSTUP_HOME=/root/.rustup

@@ -5,8 +5,7 @@
 HOMEBREW_HOME=/opt/homebrew
 eval "$(${HOMEBREW_HOME}/bin/brew shellenv)"
 
-brew install -y podman
-podman
+brew install podman
 
 case ${BUILD_MODE}
     debug)      build_mode=
