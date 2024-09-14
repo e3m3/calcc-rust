@@ -156,6 +156,6 @@ mod tests{
         eprintln!("Lit stderr:\n{}", std::str::from_utf8(stderr).unwrap());
         println!("Lit stdout:\n{}", std::str::from_utf8(stdout).unwrap());
 
-        assert!(stderr.is_empty());
+        assert!(output.status.success());
     }
 }
