@@ -1,3 +1,6 @@
+// Copyright 2024, Giordano Salvador
+// SPDX-License-Identifier: BSD-3-Clause
+
 #[cfg(test)]
 mod tests{
     use std::env;
@@ -76,9 +79,8 @@ mod tests{
         }
     }
 
-    #[test]
-    fn lit() {
-        let os_name: String = String::from(
+    fn get_os() -> String {
+        String::from(
             if cfg!(target_os = "linux") {
                 "linux"
             } else if cfg!(target_os = "macos") {
@@ -88,8 +90,11 @@ mod tests{
             } else {
                 ""
             }
-        );
-        let arch: String = String::from(
+        )
+    }
+
+    fn get_arch() -> String {
+        String::from(
             if cfg!(target_arch = "x86") {
                 "x86"
             } else if cfg!(target_arch = "x86_64") {
@@ -99,7 +104,13 @@ mod tests{
             } else {
                 ""
             }
-        );
+        )
+    }
+
+    #[test]
+    fn lit() {
+        let os_name: String = get_os();
+        let arch: String = get_arch();
 
         if os_name.is_empty() {
             eprintln!("Target OS '{}' not yet supported.", os_name);
@@ -118,7 +129,7 @@ mod tests{
         let lit_dir: PathBuf = tests_dir.join("lit-llvm");
         let cfg_path: PathBuf = lit_dir.join("lit.cfg");
 
-        eprintln!("Lit binary path: {}", lit_bin_str);
+        println!("Lit binary path: {}", lit_bin_str);
 
         assert!(calcc_dir.is_dir());
         assert!(lit_bin.is_file());
