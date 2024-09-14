@@ -5,7 +5,14 @@
 HOMEBREW_HOME=/opt/homebrew
 eval "$(${HOMEBREW_HOME}/bin/brew shellenv)"
 
-brew install podman
+brew install docker docker-buildx
+
+mkdir -p /root/.docker
+echo '
+  "cliPluginsExtraDirs": [
+      "/opt/homebrew/lib/docker/cli-plugins"
+  ]
+' >> /root/.docker/config.json
 
 case ${BUILD_MODE} in
     debug)      build_mode= ;;
@@ -13,10 +20,8 @@ case ${BUILD_MODE} in
     *)          echo "Error: BUILD_MODE=$BUILD_MODE" >2  &&  exit 1 ;;
 esac
 
-podman machine init
-podman machine start
-podman build \
+docker buildx \
     -f container/Containerfile.${DISTRO}${OS_VER} \
-    -t ${OS}-calcc-${build_mode} \
+    -t ${OS}-calcc${build_mode} \
     --build-arg=BUILD_MODE=${build_mode} \
     .
