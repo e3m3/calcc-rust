@@ -7,10 +7,10 @@ eval "$(${HOMEBREW_HOME}/bin/brew shellenv)"
 
 brew install podman
 
-case ${BUILD_MODE}
-    debug)      build_mode=
-    release)    build_mode=--release
-    *)          echo "Error: BUILD_MODE=$BUILD_MODE" >2  &&  exit 1
+case ${BUILD_MODE} in
+    debug)      build_mode= ;;
+    release)    build_mode=--release ;;
+    *)          echo "Error: BUILD_MODE=$BUILD_MODE" >2  &&  exit 1 ;;
 esac
 
 podman machine init

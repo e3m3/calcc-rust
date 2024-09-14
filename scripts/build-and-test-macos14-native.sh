@@ -32,10 +32,10 @@ export HOMEBREW_HOME
 export LLVM_HOME
 export PYTHON_VENV_PATH
 
-case ${BUILD_MODE}
-    debug)      build_mode=
-    release)    build_mode=--release
-    *)          echo "Error: BUILD_MODE=$BUILD_MODE" >2  &&  exit 1
+case ${BUILD_MODE} in
+    debug)      build_mode= ;;
+    release)    build_mode=--release ;;
+    *)          echo "Error: BUILD_MODE=$BUILD_MODE" >2  &&  exit 1 ;;
 esac
 
 cargo build --verbose ${BUILD_MODE}
