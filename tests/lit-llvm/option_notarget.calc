@@ -4,7 +4,7 @@
 // CHECK_TARGET-LABEL:      ; ModuleID = 'calcc'
 // CHECK_TARGET:            source_filename = "calcc"
 // CHECK_TARGET:            target datalayout = "{{[a-zA-Z0-9\:\-]+}}"
-// CHECK_TARGET:            target triple = "{{[\.a-zA-Z0-9\-]+}}"
+// CHECK_TARGET:            target triple = "{{[_\.a-zA-Z0-9\-]+}}"
 
 // CHECK_TARGET-LABEL:      define i64 @calcc_main() {
 // CHECK_TARGET-LABEL:      entry:
@@ -14,7 +14,7 @@
 // CHECK_NOTARGET-LABEL:    ; ModuleID = 'calcc'
 // CHECK_NOTARGET:          source_filename = "calcc"
 // CHECK_NOTARGET-NOT:      target datalayout = "{{[a-zA-Z0-9\:\-]+}}"
-// CHECK_NOTARGET-NOT:      target triple = "{{[\.a-zA-Z0-9\-]+}}"
+// CHECK_NOTARGET-NOT:      target triple = "{{[_\.a-zA-Z0-9\-]+}}"
 
 // CHECK_NOTARGET-LABEL:    define i64 @calcc_main() {
 // CHECK_NOTARGET-LABEL:    entry:
