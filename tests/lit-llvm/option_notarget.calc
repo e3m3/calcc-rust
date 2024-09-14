@@ -20,5 +20,3 @@
 // CHECK_NOTARGET-LABEL:    entry:
 // CHECK_NOTARGET:            ret i64 4096
 // CHECK_NOTARGET:          }
-
-// XFAIL: ARCH_AARCH64 && OS_LINUX

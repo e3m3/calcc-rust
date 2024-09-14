@@ -12,5 +12,3 @@
 // CHECK_B: Bytecode file type (missing '-S' flag) should match output name ('.bc' extension)
 
 // CHECK_C-NOT: ^0
-
-// XFAIL: ARCH_AARCH64 && OS_LINUX

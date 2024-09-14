@@ -164,7 +164,7 @@ impl PassBuilder {
         opt_level: OptLevel,
         no_target: bool,
     ) -> bool {
-        let passes: String = format!("default<{}>", opt_level_to_str(opt_level));
+        let passes: String = format!("default<{}>\0", opt_level_to_str(opt_level));
         unsafe {
             if !no_target {
                 LLVMSetModuleDataLayout(bundle.module, machine.data_layout);

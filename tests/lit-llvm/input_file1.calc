@@ -11,4 +11,3 @@
 with: a,b,c: c*c - (a*a + b*b)
 
 // XFAIL: ARCH_AARCH64 && OS_MACOS
-// XFAIL: ARCH_AARCH64 && OS_LINUX

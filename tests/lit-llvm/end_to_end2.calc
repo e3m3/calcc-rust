@@ -47,4 +47,3 @@
 // CHECK_F: calcc_main result: 0
 
 // XFAIL: ARCH_AARCH64 && OS_MACOS
-// XFAIL: ARCH_AARCH64 && OS_LINUX
