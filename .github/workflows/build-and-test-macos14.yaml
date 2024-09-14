@@ -49,4 +49,4 @@ jobs:
         export DISTRO=${{ inputs.distro }}
         export OS=${{ inputs.os }}
         export OS_VER=${{ inputs.os_ver }}
-        bash -c "./scripts/build-and-test-macos14-${{ inputs.script_type }}.sh"
+        bash "./scripts/build-and-test-macos14-${{ inputs.script_type }}.sh"
