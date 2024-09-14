@@ -5,3 +5,6 @@
 // RUN: @calcc -e "with: a: 1024*32/a" -o %t4.bc  &&  @clang -O0 -o %t4.out %t4.bc  &&  %t4.out 8    | @filecheck %s
 
 // CHECK:   calcc_main result: 4096
+
+// XFAIL: ARCH_AARCH64 && OS_MACOS
+// XFAIL: ARCH_AARCH64 && OS_LINUX

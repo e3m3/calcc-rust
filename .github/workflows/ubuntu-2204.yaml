@@ -20,7 +20,7 @@ on:
 jobs:
 
   run:
-    uses: e3m3/calcc-rust/.github/workflows/build-and-test.yaml@main
+    uses: e3m3/calcc-rust/.github/workflows/build-and-test-ubuntu2404.yaml@main
     with:
       build_mode: ${{ inputs.build_mode }}
       distro: ubuntu

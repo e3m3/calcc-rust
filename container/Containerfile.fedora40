@@ -1,3 +1,6 @@
+# Copyright 2024, Giordano Salvador
+# SPDX-License-Identifier: BSD-3-Clause
+
 FROM registry.fedoraproject.org/fedora:40
 
 LABEL maintainer="Giordano Salvador <73959795+e3m3@users.noreply.github.com>"

@@ -1,15 +1,15 @@
 # Copyright 2024, Giordano Salvador
 # SPDX-License-Identifier: BSD-3-Clause
 
-name: Fedora 40
+name: MacOS 14 (Container)
 
-on: 
+on:
 
   workflow_dispatch:
     branches: [ "main" ]
     inputs:
       build_mode:
-        description: Build optimization level 
+        description: Build optimization level
         required: true
         default: debug
         type: choice
@@ -20,9 +20,10 @@ on:
 jobs:
 
   run:
-    uses: e3m3/calcc-rust/.github/workflows/build-and-test-ubuntu2404.yaml@main
+    uses: e3m3/calcc-rust/.github/workflows/build-and-test-macos14.yaml@main
     with:
       build_mode: ${{ inputs.build_mode }}
       distro: fedora
       os_ver: 40
       os: fedora-40
+      script_type: container

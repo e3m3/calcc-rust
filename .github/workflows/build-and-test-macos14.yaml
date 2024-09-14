@@ -1,0 +1,52 @@
+# Copyright 2024, Giordano Salvador
+# SPDX-License-Identifier: BSD-3-Clause
+
+name: Build-and-test
+
+on:
+
+  workflow_call:
+    inputs:
+      build_mode:
+        description: Build optimization level
+        required: true
+        type: string
+      distro:
+        description: OS distribution name
+        required: true
+        type: string
+      os_ver:
+        description: OS distribution version
+        required: true
+        type: string
+      os:
+        description: OS string identifier
+        required: true
+        type: string
+      script_type:
+        description: Script type ("-container" | "-native")
+        required: true
+        type: string
+
+jobs:
+
+  build-and-test:
+    runs-on: macos-14
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+    steps:
+
+    - name: Checkout homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+
+    - name: Checkout source
+      uses: actions/checkout@v4
+
+    - name: Build source and test
+      run: |
+        export BUILD_MODE=${{ inputs.build_mode }}
+        export DISTRO=${{ inputs.distro }}
+        export OS=${{ inputs.os }}
+        export OS_VER=${{ inputs.os_ver }}
+        bash -c "./scripts/build-and-test-macos14-${{ inputs.script_type }}.sh"

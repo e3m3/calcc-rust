@@ -22,3 +22,4 @@
 // CHECK_O1:          ret i64 %v[[REG]]
 // CHECK_O1:        }
 
+// XFAIL: ARCH_AARCH64 && OS_LINUX

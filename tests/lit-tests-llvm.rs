@@ -32,54 +32,93 @@ mod tests{
         }).unwrap()
     }
 
-    fn get_shell() -> String {
-        String::from(
-            if cfg!(target_os = "linux") || cfg!(target_os = "macos") {
-                "bash"
-            } else if cfg!(target_os = "windows") {
-                "cmd"
-            } else {
+    fn get_shell(os_name: &String) -> String {
+        String::from(match os_name.as_str() {
+            "linux"     => "bash",
+            "macos"     => "bash",
+            "windows"   => "cmd",
+            _           => {
                 eprintln!("Unexpected target_os");
                 assert!(false);
                 ""
-            }
-        )
+            },
+        })
     }
 
-    fn get_lit() -> String {
+    fn get_lit(os_name: &String) -> String {
         let append_lit: fn(&Path) -> String = |path| {
             String::from(path.join("bin").join("lit").to_str().unwrap())
         };
-        if cfg!(target_os = "linux") || cfg!(target_os = "macos") {
-            match env::var("PYTHON_VENV_PATH") {
-                Ok(path)    => append_lit(Path::new(&path)),
-                Err(_)      => append_lit(Path::new("/usr")),
-            }
-        } else if cfg!(target_os = "windows") {
-            eprintln!("Windows not supported");
-            assert!(false);
-            String::new()
-        } else {
-            eprintln!("OS not supported");
-            assert!(false);
-            String::new()
+        match os_name.as_str() {
+            "linux"     =>
+                match env::var("PYTHON_VENV_PATH") {
+                    Ok(path)    => append_lit(Path::new(&path)),
+                    Err(_)      => append_lit(Path::new("/usr")),
+                },
+            "macos"     =>
+                match env::var("HOMEBREW_HOME") {
+                    Ok(path)    => append_lit(Path::new(&path)),
+                    Err(_)      => match env::var("PYTHON_VENV_PATH") {
+                        Ok(path)    => append_lit(Path::new(&path)),
+                        Err(_)      => append_lit(Path::new("/usr")),
+                    }
+                },
+            "windows"   => {
+                eprintln!("Windows not supported");
+                assert!(false);
+                String::new()
+            },
+            _           => {
+                eprintln!("OS not supported");
+                assert!(false);
+                String::new()
+            },
         }
     }
 
     #[test]
     fn lit() {
-        if !cfg!(target_os = "linux") && !cfg!(target_os = "macos") && !cfg!(target_os = "windows") {
-            eprintln!("OS not yet supported.");
+        let os_name: String = String::from(
+            if cfg!(target_os = "linux") {
+                "linux"
+            } else if cfg!(target_os = "macos") {
+                "macos"
+            } else if cfg!(target_os = "windows") {
+                "windows"
+            } else {
+                ""
+            }
+        );
+        let arch: String = String::from(
+            if cfg!(target_arch = "x86") {
+                "x86"
+            } else if cfg!(target_arch = "x86_64") {
+                "x86_64"
+            } else if cfg!(target_arch = "aarch64") {
+                "aarch64"
+            } else {
+                ""
+            }
+        );
+
+        if os_name.is_empty() {
+            eprintln!("Target OS '{}' not yet supported.", os_name);
+            assert!(false);
+        }
+        if arch.is_empty() {
+            eprintln!("Target arch '{}' not yet supported.", arch);
             assert!(false);
         }
 
         let calcc_dir: PathBuf = get_bin_dir();
-        let lit_bin_str: String = get_lit();
+        let lit_bin_str: String = get_lit(&os_name);
         let lit_bin: &Path = Path::new(lit_bin_str.as_str());
-        let shell: String = get_shell();
+        let shell: String = get_shell(&os_name);
         let tests_dir: PathBuf = get_tests_dir();
         let lit_dir: PathBuf = tests_dir.join("lit-llvm");
         let cfg_path: PathBuf = lit_dir.join("lit.cfg");
+
+        eprintln!("Lit binary path: {}", lit_bin_str);
 
         assert!(calcc_dir.is_dir());
         assert!(lit_bin.is_file());
@@ -99,6 +138,8 @@ mod tests{
             "--order=lexical",
             "--show-all",
             "--workers=4",
+            format!("--param=OS_NAME={}", os_name).as_str(),
+            format!("--param=ARCH={}", arch).as_str(),
             format!("--path={}", env_path_str).as_str(),
         ].join(" ");
 

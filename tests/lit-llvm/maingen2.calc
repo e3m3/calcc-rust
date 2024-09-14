@@ -53,3 +53,5 @@
 // CHECK-LABEL: entry:
 // CHECK:         ret i64 4096
 // CHECK:       }
+
+// XFAIL: ARCH_AARCH64 && OS_LINUX

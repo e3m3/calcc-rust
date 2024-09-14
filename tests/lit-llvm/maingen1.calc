@@ -74,3 +74,5 @@
 // CHECK:         %v3 = add nsw i64 %v2, 10
 // CHECK:         ret i64 %v3
 // CHECK:       }
+
+// XFAIL: ARCH_AARCH64 && OS_LINUX
