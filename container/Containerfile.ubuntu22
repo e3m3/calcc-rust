@@ -19,11 +19,16 @@ RUN echo 'Acquire::https::Verify-Peer "false";' >${SSL_CONF_TMP}  && \
 
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y libstdc++-12-dev gcc python3-pip python3-venv curl git
-RUN apt-get install -y llvm-15 libtinfo5 libncurses-dev # for libtinfo.a, FileCheck
-RUN ln -s /usr/bin/FileCheck-15 /usr/bin/FileCheck
+
+# for libtinfo.a, FileCheck
+# LLVM-18 is installed later
+ENV LLVM_VER=15
+RUN apt-get install -y llvm-${LLVM_VER} llvm-${LLVM_VER}-tools libtinfo5 libncurses-dev
+ENV PATH=/usr/lib/llvm-${LLVM_VER}/bin:${PATH}
 
 RUN apt-get clean
 
+ENV LLVM_VER=18
 ENV LLVM_DIR=clang+llvm-18.1.8-x86_64-linux-gnu-ubuntu-18.04
 ENV LLVM_BIN_URL=https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/${LLVM_DIR}.tar.xz
 RUN curl -L -o /root/llvm-package.tar.xz ${LLVM_BIN_URL}

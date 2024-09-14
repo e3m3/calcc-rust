@@ -17,9 +17,21 @@ RUN echo 'Acquire::https::Verify-Peer "false";' >${SSL_CONF_TMP}  && \
     apt-get update && apt-get install ca-certificates -y  && \
     rm ${SSL_CONF_TMP}
 
+ENV LLVM_VER=18
+
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y libstdc++-14-dev gcc llvm llvm-dev clang rustup python3-pip python3-venv
+RUN apt-get install -y \
+        libstdc++-14-dev \
+        gcc \
+        llvm-${LLVM_VER} \
+        llvm-${LLVM_VER}-dev \
+        llvm-${LLVM_VER}-tools \
+        clang \
+        rustup \
+        python3-pip \
+        python3-venv
 RUN apt-get clean
+ENV PATH=/usr/lib/llvm-${LLVM_VER}/bin:${PATH}
 
 ENV PYTHON_VENV_PATH=/root/.python/venv
 RUN python3 -m venv ${PYTHON_VENV_PATH}
