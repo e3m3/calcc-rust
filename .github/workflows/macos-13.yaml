@@ -1,7 +1,7 @@
 # Copyright 2024, Giordano Salvador
 # SPDX-License-Identifier: BSD-3-Clause
 
-name: MacOS 14 (Native)
+name: MacOS 13
 
 on:
 
@@ -20,7 +20,6 @@ on:
 jobs:
 
   run:
-    uses: e3m3/calcc-rust/.github/workflows/build-and-test-macos14.yaml@main
+    uses: e3m3/calcc-rust/.github/workflows/build-and-test-macos13.yaml@main
     with:
       build_mode: ${{ inputs.build_mode }}
-      script_type: native

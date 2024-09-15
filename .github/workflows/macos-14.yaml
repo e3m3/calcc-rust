@@ -1,7 +1,7 @@
 # Copyright 2024, Giordano Salvador
 # SPDX-License-Identifier: BSD-3-Clause
 
-name: MacOS 13 (Container)
+name: MacOS 14
 
 on:
 
@@ -20,10 +20,6 @@ on:
 jobs:
 
   run:
-    uses: e3m3/calcc-rust/.github/workflows/build-and-test-macos13.yaml@main
+    uses: e3m3/calcc-rust/.github/workflows/build-and-test-macos14.yaml@main
     with:
       build_mode: ${{ inputs.build_mode }}
-      distro: fedora
-      os_ver: 40
-      os: fedora-40
-      script_type: container

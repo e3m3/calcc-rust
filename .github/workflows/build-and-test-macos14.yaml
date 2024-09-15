@@ -11,10 +11,6 @@ on:
         description: Build optimization level
         required: true
         type: string
-      script_type:
-        description: Script type ("-container" | "-native")
-        required: true
-        type: string
 
 jobs:
 
@@ -34,4 +30,4 @@ jobs:
     - name: Build source and test
       run: |
         export BUILD_MODE=${{ inputs.build_mode }}
-        bash -x "./scripts/build-and-test-macos14-${{ inputs.script_type }}.sh"
+        bash -x "./scripts/build-and-test-macos.sh"

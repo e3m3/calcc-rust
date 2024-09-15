@@ -38,5 +38,5 @@ case ${BUILD_MODE} in
     *)          echo "Error: BUILD_MODE=$BUILD_MODE" >2  &&  exit 1 ;;
 esac
 
-cargo build --verbose ${BUILD_MODE}
-cargo test --verbose ${BUILD_MODE} -- --nocapture
+cargo build --verbose ${build_mode}
+cargo test --verbose ${build_mode} -- --nocapture
