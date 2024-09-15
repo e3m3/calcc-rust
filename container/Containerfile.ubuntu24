@@ -6,6 +6,9 @@ FROM docker.io/ubuntu:24.04
 LABEL maintainer="Giordano Salvador <73959795+e3m3@users.noreply.github.com>"
 USER root
 
+ENV HOME=/root
+RUN mkdir -p ${HOME}
+
 ENV TERM=xterm-256color
 ENV PROJECT_DIR=${HOME}/project
 
@@ -33,13 +36,13 @@ RUN apt-get install -y \
 RUN apt-get clean
 ENV PATH=/usr/lib/llvm-${LLVM_VER}/bin:${PATH}
 
-ENV PYTHON_VENV_PATH=/root/.python/venv
+ENV PYTHON_VENV_PATH=${HOME}/.python/venv
 RUN python3 -m venv ${PYTHON_VENV_PATH}
 ENV PATH=${PYTHON_VENV_PATH}/bin:${PATH}
 RUN pip install lit
 
 ENV RUST_CHANNEL=stable
-ENV RUSTUP_HOME=/root/.rustup
+ENV RUSTUP_HOME=${HOME}/.rustup
 ENV TOOLCHAIN=${RUST_CHANNEL}-x86_64-unknown-linux-gnu
 
 RUN rustup set auto-self-update disable

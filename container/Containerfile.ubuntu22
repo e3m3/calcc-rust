@@ -6,6 +6,9 @@ FROM docker.io/ubuntu:22.04
 LABEL maintainer="Giordano Salvador <73959795+e3m3@users.noreply.github.com>"
 USER root
 
+ENV HOME=/root
+RUN mkdir -p ${HOME}
+
 ENV TERM=xterm-256color
 ENV PROJECT_DIR=${HOME}/project
 
@@ -31,23 +34,23 @@ RUN apt-get clean
 ENV LLVM_VER=18
 ENV LLVM_DIR=clang+llvm-18.1.8-x86_64-linux-gnu-ubuntu-18.04
 ENV LLVM_BIN_URL=https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/${LLVM_DIR}.tar.xz
-RUN curl -L -o /root/llvm-package.tar.xz ${LLVM_BIN_URL}
-RUN cd /root  &&  tar --no-same-owner -Jxf /root/llvm-package.tar.xz
-ENV PATH=/root/${LLVM_DIR}/bin:${PATH}
-ENV PATH=/root/${LLVM_DIR}/libexec:${PATH}
-ENV LD_LIBRARY_PATH=/root/${LLVM_DIR}/lib:${LD_LIBRARY_PATH}
-ENV C_INCLUDE_PATH=/root/${LLVM_DIR}/include:${C_INCLUDE_PATH}
-ENV CPLUS_INCLUDE_PATH=/root/${LLVM_DIR}/include:${CPLUS_INCLUDE_PATH}
+RUN curl -L -o ${HOME}/llvm-package.tar.xz ${LLVM_BIN_URL}
+RUN cd ${HOME}  &&  tar --no-same-owner -Jxf ${HOME}/llvm-package.tar.xz
+ENV PATH=${HOME}/${LLVM_DIR}/bin:${PATH}
+ENV PATH=${HOME}/${LLVM_DIR}/libexec:${PATH}
+ENV LD_LIBRARY_PATH=${HOME}/${LLVM_DIR}/lib:${LD_LIBRARY_PATH}
+ENV C_INCLUDE_PATH=${HOME}/${LLVM_DIR}/include:${C_INCLUDE_PATH}
+ENV CPLUS_INCLUDE_PATH=${HOME}/${LLVM_DIR}/include:${CPLUS_INCLUDE_PATH}
 
-ENV PYTHON_VENV_PATH=/root/.python/venv
+ENV PYTHON_VENV_PATH=${HOME}/.python/venv
 RUN python3 -m venv ${PYTHON_VENV_PATH}
 ENV PATH=${PYTHON_VENV_PATH}/bin:${PATH}
 RUN pip install lit
 
 ENV RUST_CHANNEL=stable
-ENV RUSTUP_HOME=/root/.rustup
+ENV RUSTUP_HOME=${HOME}/.rustup
 ENV TOOLCHAIN=${RUST_CHANNEL}-x86_64-unknown-linux-gnu
-ENV CARGO_ENV=/root/.cargo/env
+ENV CARGO_ENV=${HOME}/.cargo/env
 
 RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf -o rustup-boostrap.sh  && \
     sh rustup-boostrap.sh -y
