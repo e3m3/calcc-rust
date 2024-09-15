@@ -23,7 +23,4 @@ jobs:
     uses: e3m3/calcc-rust/.github/workflows/build-and-test-macos14.yaml@main
     with:
       build_mode: ${{ inputs.build_mode }}
-      distro: macos
-      os_ver: 14
-      os: macos-14
       script_type: native

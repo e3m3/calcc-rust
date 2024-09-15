@@ -11,6 +11,18 @@ on:
         description: Build optimization level
         required: true
         type: string
+      distro:
+        description: OS distribution name
+        required: true
+        type: string
+      os_ver:
+        description: OS distribution version
+        required: true
+        type: string
+      os:
+        description: OS string identifier
+        required: true
+        type: string
       script_type:
         description: Script type ("-container" | "-native")
         required: true
@@ -19,7 +31,7 @@ on:
 jobs:
 
   build-and-test:
-    runs-on: macos-14
+    runs-on: macos-13
     defaults:
       run:
         working-directory: ${{ github.workspace }}
@@ -28,10 +40,16 @@ jobs:
     - name: Checkout homebrew
       uses: Homebrew/actions/setup-homebrew@master
 
+    - name: Setup docker (for MacOS)
+      uses: douglascamata/setup-docker-macos-action@v1-alpha
+
     - name: Checkout source
       uses: actions/checkout@v4
 
     - name: Build source and test
       run: |
         export BUILD_MODE=${{ inputs.build_mode }}
-        bash -x "./scripts/build-and-test-macos14-${{ inputs.script_type }}.sh"
+        export DISTRO=${{ inputs.distro }}
+        export OS=${{ inputs.os }}
+        export OS_VER=${{ inputs.os_ver }}
+        bash -x "./scripts/build-and-test-macos13-${{ inputs.script_type }}.sh"

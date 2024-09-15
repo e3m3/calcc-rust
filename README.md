@@ -11,7 +11,8 @@ Author/Maintainer:  Giordano Salvador <73959795+e3m3@users.noreply.github.com>
 [![Ubuntu 22.04](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2204.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2204.yaml)
 [![Ubuntu 24.04](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2404.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/ubuntu-2404.yaml)
 [![Fedora 40](https://github.com/e3m3/calcc-rust/actions/workflows/fedora-40.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/fedora-40.yaml)
-[![MacOS 14 (Container)](https://github.com/e3m3/calcc-rust/actions/workflows/macos-14-container.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/macos-14-container.yaml)
+
+[![MacOS 13 (Container)](https://github.com/e3m3/calcc-rust/actions/workflows/macos-13-container.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/macos-13-container.yaml)
 [![MacOS 14 (Native)](https://github.com/e3m3/calcc-rust/actions/workflows/macos-14-native.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/macos-14-native.yaml)
 
 Learning [Rust][1] [[1]] by implementing the calc langauge using the [llvm-sys][2] [[2]] crate.
