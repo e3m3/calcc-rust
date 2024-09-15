@@ -2,7 +2,7 @@
 # Copyright 2024, Giordano Salvador
 # SPDX-License-Identifier: BSD-3-Clause
 
-HOMEBREW_HOME=/opt/homebrew
+HOMEBREW_HOME=${HOMEBREW_HOME:=/opt/homebrew}
 eval "$(${HOMEBREW_HOME}/bin/brew shellenv)"
 
 LLVM_VER=18

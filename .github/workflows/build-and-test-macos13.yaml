@@ -30,4 +30,5 @@ jobs:
     - name: Build source and test
       run: |
         export BUILD_MODE=${{ inputs.build_mode }}
+        export HOMEBREW_HOME="$(brew --prefix)"
         bash -x "./scripts/build-and-test-macos.sh"
