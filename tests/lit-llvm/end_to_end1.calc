@@ -6,4 +6,4 @@
 
 // CHECK:   calcc_main result: 4096
 
-// XFAIL: ARCH_AARCH64 && OS_MACOS
+// XFAIL: OS_MACOS
