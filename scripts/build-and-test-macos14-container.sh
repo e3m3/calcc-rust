@@ -13,6 +13,7 @@ case ${BUILD_MODE} in
     *)          echo "Error: BUILD_MODE=$BUILD_MODE" >&2  &&  exit 1 ;;
 esac
 
+docker-buildx install
 docker-buildx build \
     -f container/Containerfile.${DISTRO}${OS_VER} \
     -t ${OS}-calcc${build_mode} \
