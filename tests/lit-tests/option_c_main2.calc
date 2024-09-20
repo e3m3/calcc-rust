@@ -1,0 +1,8 @@
+// RUN: not @calcc %s 2>&1 | @filecheck %s
+
+// REQUIRES:    OS_MACOS
+
+// CHECK:       Linking the C standard library from a kernel+main module is not supported on MacOS
+// CHECK:       Please use the C-derived main option (-C|--c-main)
+
+with: a,b: a/b

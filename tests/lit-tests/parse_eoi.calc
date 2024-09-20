@@ -1,8 +1,8 @@
-// RUN: not @calcc -v -k -S --parse -e ""             2>&1 | @filecheck %s --check-prefix=CHECK_A
-// RUN: not @calcc -v -k -S --parse -e "25 + "        2>&1 | @filecheck %s --check-prefix=CHECK_B
-// RUN: not @calcc -v -k -S --parse -e "with: a"      2>&1 | @filecheck %s --check-prefix=CHECK_C
-// RUN: not @calcc -v -k -S --parse -e "with: a: a +" 2>&1 | @filecheck %s --check-prefix=CHECK_D
-// RUN: not @calcc -v -k -S --parse -e "// comment"   2>&1 | @filecheck %s --check-prefix=CHECK_E
+// RUN: not @calcc -v --parse -e ""             2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: not @calcc -v --parse -e "25 + "        2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN: not @calcc -v --parse -e "with: a"      2>&1 | @filecheck %s --check-prefix=CHECK_C
+// RUN: not @calcc -v --parse -e "with: a: a +" 2>&1 | @filecheck %s --check-prefix=CHECK_D
+// RUN: not @calcc -v --parse -e "// comment"   2>&1 | @filecheck %s --check-prefix=CHECK_E
 
 // CHECK_A: Lexed token 'Eoi:'
 // CHECK_A: Unexpected token

@@ -1,6 +1,6 @@
-// RUN: @calcc -v -k -S --lex -e "//"                          2>&1 | @filecheck %s --check-prefix=CHECK_A
-// RUN: @calcc -v -k -S --lex -e "// comment"                  2>&1 | @filecheck %s --check-prefix=CHECK_B
-// RUN: @calcc -v -k -S --lex -e "with: a: 3/a // Divide by a" 2>&1 | @filecheck %s --check-prefix=CHECK_C
+// RUN: @calcc -v --lex -e "//"                          2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc -v --lex -e "// comment"                  2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN: @calcc -v --lex -e "with: a: 3/a // Divide by a" 2>&1 | @filecheck %s --check-prefix=CHECK_C
 
 // CHECK_A: Processing input 'Expression://'
 // CHECK_A: Read 2 bytes from buffer at line 0

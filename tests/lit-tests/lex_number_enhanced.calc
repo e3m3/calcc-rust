@@ -1,10 +1,10 @@
-// RUN:     @calcc --verbose -k -S --lex -e -9    2>&1 | @filecheck %s --check-prefix=CHECK_A
-// RUN:     @calcc --verbose -k -S --lex -e "- 9" 2>&1 | @filecheck %s --check-prefix=CHECK_B
-// RUN:     @calcc --verbose -k -S --lex -e 0xAF  2>&1 | @filecheck %s --check-prefix=CHECK_C
-// RUN:     @calcc --verbose -k -S --lex -e 0x0c1 2>&1 | @filecheck %s --check-prefix=CHECK_D
-// RUN:     @calcc --verbose -k -S --lex -e 012   2>&1 | @filecheck %s --check-prefix=CHECK_E
-// RUN: not @calcc --verbose -k -S --lex -e 0x0z3 2>&1 | @filecheck %s --check-prefix=CHECK_F
-// RUN: not @calcc --verbose -k -S --lex -e 140_3 2>&1 | @filecheck %s --check-prefix=CHECK_G
+// RUN:     @calcc --verbose --lex -e -9    2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN:     @calcc --verbose --lex -e "- 9" 2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN:     @calcc --verbose --lex -e 0xAF  2>&1 | @filecheck %s --check-prefix=CHECK_C
+// RUN:     @calcc --verbose --lex -e 0x0c1 2>&1 | @filecheck %s --check-prefix=CHECK_D
+// RUN:     @calcc --verbose --lex -e 012   2>&1 | @filecheck %s --check-prefix=CHECK_E
+// RUN: not @calcc --verbose --lex -e 0x0z3 2>&1 | @filecheck %s --check-prefix=CHECK_F
+// RUN: not @calcc --verbose --lex -e 140_3 2>&1 | @filecheck %s --check-prefix=CHECK_G
 
 // CHECK_A: Processing input 'Expression:-9'
 // CHECK_A: Read 2 bytes from buffer at line 0

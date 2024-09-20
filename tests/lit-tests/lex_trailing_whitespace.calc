@@ -1,5 +1,5 @@
-// RUN: @calcc -v --lex -k -S -e "10 + 5  "              2>&1 | @filecheck %s --check-prefix=CHECK_A
-// RUN: @calcc -v --lex -k -S -e "with: a: 3 + a       " 2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN: @calcc -v --lex -e "10 + 5  "              2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc -v --lex -e "with: a: 3 + a       " 2>&1 | @filecheck %s --check-prefix=CHECK_B
 
 // CHECK_A: Processing input 'Expression:10 + 5  '
 // CHECK_A: Read 8 bytes from buffer at line 0

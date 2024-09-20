@@ -1,10 +1,10 @@
-// RUN: @calcc --verbose -k -S --lex -e "N"    2>&1 | @filecheck %s --check-prefix=CHECK_A
-// RUN: @calcc --verbose -k -S --lex -e "_N"   2>&1 | @filecheck %s --check-prefix=CHECK_B
-// RUN: @calcc --verbose -k -S --lex -e "N0"   2>&1 | @filecheck %s --check-prefix=CHECK_C
-// RUN: @calcc --verbose -k -S --lex -e "N_0"  2>&1 | @filecheck %s --check-prefix=CHECK_D
-// RUN: @calcc --verbose -k -S --lex -e "_N0"  2>&1 | @filecheck %s --check-prefix=CHECK_E
-// RUN: @calcc --verbose -k -S --lex -e "_N_0" 2>&1 | @filecheck %s --check-prefix=CHECK_F
-// RUN: @calcc --verbose -k -S --lex -e "-N"   2>&1 | @filecheck %s --check-prefix=CHECK_G
+// RUN: @calcc --verbose --lex -e "N"    2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc --verbose --lex -e "_N"   2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN: @calcc --verbose --lex -e "N0"   2>&1 | @filecheck %s --check-prefix=CHECK_C
+// RUN: @calcc --verbose --lex -e "N_0"  2>&1 | @filecheck %s --check-prefix=CHECK_D
+// RUN: @calcc --verbose --lex -e "_N0"  2>&1 | @filecheck %s --check-prefix=CHECK_E
+// RUN: @calcc --verbose --lex -e "_N_0" 2>&1 | @filecheck %s --check-prefix=CHECK_F
+// RUN: @calcc --verbose --lex -e "-N"   2>&1 | @filecheck %s --check-prefix=CHECK_G
 
 // CHECK_A: Processing input 'Expression:N'
 // CHECK_A: Read 1 bytes from buffer at line 0

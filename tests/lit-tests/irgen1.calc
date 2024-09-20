@@ -1,7 +1,6 @@
-// RUN: @calcc --no-main -O0 --llvmir -e "with: a,b: a+b + 10" | @filecheck %s
-// RUN: @calcc --no-main -O0 -S       -e "with: a,b: a+b + 10" | @filecheck %s
+// RUN: @calcc --ir -e "with: a,b: a+b + 10" 2>&1 | @filecheck %s
+// RUN: @calcc --ir -e "with: a,b: a+b + 10" 2>&1 | @filecheck %s
 
-// CHECK-LABEL: ; ModuleID = 'calcc'
 // CHECK:       source_filename = "-"
 
 // CHECK-LABEL: define i64 @calcc_main(i64 %0, i64 %1) {

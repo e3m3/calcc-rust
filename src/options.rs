@@ -37,6 +37,10 @@ impl RunOptions {
             verbose: false,
         }
     }
+
+    pub fn early_exit(&self) -> bool {
+        self.ir_exit || self.lex_exit || self.parse_exit || self.sem_exit
+    }
 }
 
 impl fmt::Display for RunOptions {

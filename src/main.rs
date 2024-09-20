@@ -173,6 +173,11 @@ fn check_options_configuration(options: &RunOptions, output: &OutputType) -> () 
         },
     };
 
+    // If early exit is enabled, don't worry about incompatible output types below
+    if options.early_exit() {
+        return;
+    }
+
     if options.body_type == BodyType::NoMain && options.codegen_type == CodeGenType::Executable {
         eprintln!("Unsupported -k-|-no-main with executable output type");
         exit(ExitCode::ArgParseError);

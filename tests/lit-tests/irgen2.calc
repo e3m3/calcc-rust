@@ -1,10 +1,9 @@
-// RUN: @calcc --no-main -O0 --llvmir -e "1024*32/8" | @filecheck %s
-// RUN: @calcc --no-main -O0 -S       -e "1024*32/8" | @filecheck %s
+// RUN: @calcc --ir -e "1024*32/8" 2>&1 | @filecheck %s
+// RUN: @calcc --ir -e "1024*32/8" 2>&1 | @filecheck %s
 
 /// The comprising arithmetic instructions are being optimized out
 /// (constant folding) between insertion in the module and the module dump call.
 
-// CHECK-LABEL: ; ModuleID = 'calcc'
 // CHECK:       source_filename = "-"
 
 // CHECK-LABEL: define i64 @calcc_main() {

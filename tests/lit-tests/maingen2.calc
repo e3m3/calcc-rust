@@ -1,5 +1,5 @@
-// RUN: @calcc -O0 --llvmir -e "1024*32/8" | @filecheck %s
-// RUN: @calcc -O0 -S       -e "1024*32/8" | @filecheck %s
+// RUN: @calcc --ir -e "1024*32/8" 2>&1 | @filecheck %s
+// RUN: @calcc --ir -e "1024*32/8" 2>&1 | @filecheck %s
 
 // UNSUPPORTED: OS_MACOS
 

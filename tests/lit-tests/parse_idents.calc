@@ -1,8 +1,8 @@
-// RUN: @calcc --verbose -k -S --ast --parse -e a        2>&1 | @filecheck %s --check-prefix=CHECK_A
-// RUN: @calcc --verbose -k -S --ast --parse -e point    2>&1 | @filecheck %s --check-prefix=CHECK_B
-// RUN: @calcc --verbose -k -S --ast --parse -e Zpos     2>&1 | @filecheck %s --check-prefix=CHECK_C
-// RUN: @calcc --verbose -k -S --ast --parse -e __file__ 2>&1 | @filecheck %s --check-prefix=CHECK_D
-// RUN: @calcc --verbose -k -S --ast --parse -e tmp002   2>&1 | @filecheck %s --check-prefix=CHECK_E
+// RUN: @calcc --verbose --ast --parse -e a        2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc --verbose --ast --parse -e point    2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN: @calcc --verbose --ast --parse -e Zpos     2>&1 | @filecheck %s --check-prefix=CHECK_C
+// RUN: @calcc --verbose --ast --parse -e __file__ 2>&1 | @filecheck %s --check-prefix=CHECK_D
+// RUN: @calcc --verbose --ast --parse -e tmp002   2>&1 | @filecheck %s --check-prefix=CHECK_E
 
 // CHECK_A: Consumed expected token 'Ident' at position '0'
 // CHECK_A: AST: Ident(a)

@@ -1,4 +1,4 @@
-// RUN: @calcc --verbose --lex -k -S -e ',:-()/*' 2>&1 | @filecheck %s
+// RUN: @calcc --verbose --lex -e ',:-()/*' 2>&1 | @filecheck %s
 
 // CHECK: Processing input 'Expression:,:-()/*'
 // CHECK: Read 7 bytes from buffer at line 0

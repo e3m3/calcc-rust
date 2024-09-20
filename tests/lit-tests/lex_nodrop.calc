@@ -1,5 +1,5 @@
-// RUN: echo -n "hello $" | not @calcc --verbose -k -S --lex - 2>&1 | @filecheck %s --check-prefix=CHECK_A
-// RUN: echo -n "hello é" | not @calcc --verbose -k -S --lex - 2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN: echo -n "hello $" | not @calcc --verbose --lex - 2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: echo -n "hello é" | not @calcc --verbose --lex - 2>&1 | @filecheck %s --check-prefix=CHECK_B
 
 // CHECK_A: Processing input 'Stdin'
 // CHECK_A: Read 7 bytes from buffer at line 0

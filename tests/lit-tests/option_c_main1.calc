@@ -1,9 +1,11 @@
-// RUN: not @calcc --llvmir %s     --no-main --c-main 2>&1 | @filecheck %s --check-prefix=CHECK_A
-// RUN: not @calcc --llvmir %s     --c-main --no-main 2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: not @calcc         %s --no-main --c-main 2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: not @calcc         %s --c-main --no-main 2>&1 | @filecheck %s --check-prefix=CHECK_A
 
-// RUN:     @calcc -v --ir  %s     --c-main           2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN:     @calcc -v --ir %s --c-main           2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN:     @calcc -v --ir %s -C                 2>&1 | @filecheck %s --check-prefix=CHECK_B
 
-// RUN:     @calcc --llvmir %s -O0 --c-main           2>&1 | @filecheck %s --check-prefix=CHECK_C
+// RUN:     @calcc    --ir %s --c-main           2>&1 | @filecheck %s --check-prefix=CHECK_C
+// RUN:     @calcc    --ir %s -C                 2>&1 | @filecheck %s --check-prefix=CHECK_C
 
 // CHECK_A:         Incompatible compiler flags: '-k|--no-main' and '-C|--c-main'
 
@@ -52,9 +54,5 @@
 // CHECK_C:           %v6 = sub nsw i64 %v5, 3
 // CHECK_C:           ret i64 %v6
 // CHECK_C:         }
-
-// COM: CHECK_C-LABEL:   i32 define @main(i32 %vArgc, ptr %vArgv)
-// COM: CHECK_C-LABEL:   entry:
-// COM: CHECK_C:           %[[REG0:.+]] = call i64 @calcc_main(i64 %[[REG1:.+]], i64 %[[REG2:.+]])
 
 with: a,b: a*a + 2*b - 3

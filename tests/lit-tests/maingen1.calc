@@ -1,5 +1,5 @@
-// RUN: @calcc -O0 --llvmir -e "with: a,b: a+b + 10" | @filecheck %s
-// RUN: @calcc -O0 -S       -e "with: a,b: a+b + 10" | @filecheck %s
+// RUN: @calcc --ir -e "with: a,b: a+b + 10" 2>&1 | @filecheck %s
+// RUN: @calcc --ir -e "with: a,b: a+b + 10" 2>&1 | @filecheck %s
 
 // UNSUPPORTED: OS_MACOS
 

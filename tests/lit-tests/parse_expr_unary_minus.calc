@@ -1,10 +1,10 @@
-// RUN: @calcc --verbose -k -S --ast --parse -e "0 - N"      2>&1 | @filecheck %s --check-prefix=CHECK_A
-// RUN: @calcc --verbose -k -S --ast --parse -e "-N"         2>&1 | @filecheck %s --check-prefix=CHECK_B
-// RUN: @calcc --verbose -k -S --ast --parse -e "-N + 2"     2>&1 | @filecheck %s --check-prefix=CHECK_C
-// RUN: @calcc --verbose -k -S --ast --parse -e "2 + -N"     2>&1 | @filecheck %s --check-prefix=CHECK_D
-// RUN: @calcc --verbose -k -S --ast --parse -e "-(N) + 2"   2>&1 | @filecheck %s --check-prefix=CHECK_E
-// RUN: @calcc --verbose -k -S --ast --parse -e "2 + -(N)"   2>&1 | @filecheck %s --check-prefix=CHECK_F
-// RUN: @calcc --verbose -k -S --ast --parse -e "2 + -(N*2)" 2>&1 | @filecheck %s --check-prefix=CHECK_G
+// RUN: @calcc --verbose --ast --parse -e "0 - N"      2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc --verbose --ast --parse -e "-N"         2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN: @calcc --verbose --ast --parse -e "-N + 2"     2>&1 | @filecheck %s --check-prefix=CHECK_C
+// RUN: @calcc --verbose --ast --parse -e "2 + -N"     2>&1 | @filecheck %s --check-prefix=CHECK_D
+// RUN: @calcc --verbose --ast --parse -e "-(N) + 2"   2>&1 | @filecheck %s --check-prefix=CHECK_E
+// RUN: @calcc --verbose --ast --parse -e "2 + -(N)"   2>&1 | @filecheck %s --check-prefix=CHECK_F
+// RUN: @calcc --verbose --ast --parse -e "2 + -(N*2)" 2>&1 | @filecheck %s --check-prefix=CHECK_G
 
 // CHECK_A: Consumed expected token 'Number' at position '0'
 // CHECK_A: Consumed expected token 'Minus' at position '1'
