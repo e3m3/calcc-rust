@@ -1,0 +1,14 @@
+// RUN: @calcc --verbose -k -S --lex -e hello     2>&1 | @filecheck %s
+// RUN: @calcc --verbose -k -S --lex -e=hello     2>&1 | @filecheck %s
+// RUN: @calcc --verbose -k -S --lex --expr hello 2>&1 | @filecheck %s
+// RUN: @calcc --verbose -k -S --lex --expr=hello 2>&1 | @filecheck %s
+
+// CHECK: Processing input 'Expression:hello'
+// CHECK: Read 5 bytes from buffer at line 0
+// CHECK: Found char 'h' in line 0 at pos 0
+// CHECK: Found char 'e' in line 0 at pos 1
+// CHECK: Found char 'l' in line 0 at pos 2
+// CHECK: Found char 'l' in line 0 at pos 3
+// CHECK: Found char 'o' in line 0 at pos 4
+// CHECK: Lexed token 'Ident:hello'
+// CHECK: Lexed token 'Eoi:'

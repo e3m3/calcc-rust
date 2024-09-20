@@ -1,5 +1,0 @@
-// RUN: @calcc --version 2>&1 | @filecheck %s
-
-// CHECK: Welcome to calcc version v0.1.0-dev
-// CHECK: // Copyright 2024, Giordano Salvador
-// CHECK: // SPDX-License-Identifier: BSD-3-Clause

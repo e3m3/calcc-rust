@@ -8,8 +8,31 @@ use llvm::error::LLVMDisposeErrorMessage;
 use llvm::error::LLVMGetErrorMessage;
 use llvm::core::LLVMDisposeMessage;
 use llvm::core::LLVMSetTarget;
-use llvm::target::*;
-use llvm::target_machine::*;
+use llvm::target::LLVM_InitializeAllAsmParsers;
+use llvm::target::LLVM_InitializeAllAsmPrinters;
+use llvm::target::LLVM_InitializeAllTargetInfos;
+use llvm::target::LLVM_InitializeAllTargetMCs;
+use llvm::target::LLVM_InitializeAllTargets;
+use llvm::target::LLVMDisposeTargetData;
+use llvm::target::LLVMSetModuleDataLayout;
+use llvm::target::LLVMTargetDataRef;
+use llvm::target_machine::LLVMCreateTargetDataLayout;
+use llvm::target_machine::LLVMCreateTargetMachineOptions;
+use llvm::target_machine::LLVMCreateTargetMachineWithOptions;
+use llvm::target_machine::LLVMCodeGenOptLevel;
+use llvm::target_machine::LLVMCodeModel;
+use llvm::target_machine::LLVMDisposeTargetMachine;
+use llvm::target_machine::LLVMDisposeTargetMachineOptions;
+use llvm::target_machine::LLVMGetDefaultTargetTriple;
+use llvm::target_machine::LLVMGetFirstTarget;
+use llvm::target_machine::LLVMGetTargetFromTriple;
+use llvm::target_machine::LLVMRelocMode;
+use llvm::target_machine::LLVMTargetMachineOptionsRef;
+use llvm::target_machine::LLVMTargetMachineOptionsSetCodeGenOptLevel;
+use llvm::target_machine::LLVMTargetMachineOptionsSetCodeModel;
+use llvm::target_machine::LLVMTargetMachineOptionsSetRelocMode;
+use llvm::target_machine::LLVMTargetMachineRef;
+use llvm::target_machine::LLVMTargetRef;
 
 use llvm::transforms::pass_builder::*;
 
@@ -24,7 +47,6 @@ use crate::options;
 use exit_code::exit;
 use exit_code::ExitCode;
 use module::ModuleBundle;
-use options::opt_level_to_str;
 use options::OptLevel;
 
 static mut INITIALIZED: bool = false;
@@ -147,6 +169,13 @@ impl <'a> Drop for TargetMachine<'a> {
     }
 }
 
+#[allow(dead_code)]
+#[derive(Clone)]
+pub enum Passes {
+    Default(OptLevel),
+    Pipeline(String),
+}
+
 pub struct PassBuilder {
     builder: LLVMPassBuilderOptionsRef,
 }
@@ -161,10 +190,18 @@ impl PassBuilder {
         &mut self,
         bundle: &mut ModuleBundle,
         machine: &mut TargetMachine,
-        opt_level: OptLevel,
+        passes: Passes,
         no_target: bool,
     ) -> bool {
-        let passes: String = format!("default<{}>\0", opt_level_to_str(opt_level));
+        let passes_str = match passes {
+            Passes::Default(opt_level)  => format!("default<{}>\0", match opt_level {
+                OptLevel::O0    => "O0",
+                OptLevel::O1    => "O1",
+                OptLevel::O2    => "O2",
+                OptLevel::O3    => "O3",
+            }),
+            Passes::Pipeline(string)    => format!("{}\0", string),
+        };
         unsafe {
             if !no_target {
                 LLVMSetModuleDataLayout(bundle.module, machine.data_layout);
@@ -172,7 +209,7 @@ impl PassBuilder {
             };
             let error: LLVMErrorRef = LLVMRunPasses(
                 bundle.module,
-                passes.as_ptr() as *const c_char,
+                passes_str.as_ptr() as *const c_char,
                 machine.machine,
                 self.builder
             );

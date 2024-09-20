@@ -5,11 +5,25 @@
 /// program function generated for the input program.
 /// This approach is used to avoid interfacing with a stub program written in C, directly calling
 /// the dependent library functions.
-/// Omit this code generation by passing '--nomain' to calcc.
+/// Omit this code generation by passing '--no-main' to calcc.
 
 extern crate llvm_sys as llvm;
 
-use llvm::core::*;
+use llvm::core::LLVMAddFunction;
+use llvm::core::LLVMAddGlobal;
+use llvm::core::LLVMAppendBasicBlockInContext;
+use llvm::core::LLVMBuildBr;
+use llvm::core::LLVMBuildCall2;
+use llvm::core::LLVMBuildCondBr;
+use llvm::core::LLVMBuildGEP2;
+use llvm::core::LLVMBuildICmp;
+use llvm::core::LLVMBuildLoad2;
+use llvm::core::LLVMBuildRet;
+use llvm::core::LLVMBuildStore;
+use llvm::core::LLVMFunctionType;
+use llvm::core::LLVMGetParam;
+use llvm::core::LLVMPositionBuilderAtEnd;
+use llvm::core::LLVMSetAlignment;
 use llvm::prelude::LLVMBasicBlockRef;
 use llvm::prelude::LLVMBool;
 use llvm::prelude::LLVMTypeRef;
@@ -46,7 +60,7 @@ pub struct MainGen<'a, 'b> {
 }
 
 impl <'a, 'b> MainGen<'a, 'b> {
-    pub fn new(bundle: &'a mut ModuleBundle<'b>) -> Self {
+    fn new(bundle: &'a mut ModuleBundle<'b>) -> Self {
         MainGen{bundle}
     }
 

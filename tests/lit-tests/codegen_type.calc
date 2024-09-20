@@ -1,0 +1,28 @@
+// RUN: not @calcc -k -e "10" -S -o %t.bc  2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: not @calcc -k -e "10" -b -o %t.ll  2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN: not @calcc -k -e "10" -b -o %t.o   2>&1 | @filecheck %s --check-prefix=CHECK_C
+// RUN: not @calcc -k -e "10" -b -o %t.exe 2>&1 | @filecheck %s --check-prefix=CHECK_D
+// RUN: not @calcc -k -e "10" -b -o %t     2>&1 | @filecheck %s --check-prefix=CHECK_E
+
+// RUN: @calcc -k -e "10" -S -o %t0.ll   &&  @llvm-as  -o %t0.bc %t0.ll
+// RUN: @calcc -k -e "10" -b -o %t1.bc   &&  @llvm-dis -o %t1.ll %t1.bc
+// RUN: @calcc    -e "10" -c -o %t1.o
+// RUN: @calcc    -e "10"    -o %t1.exe
+// RUN: @calcc    -e "10"    -o %t1
+// RUN: @count -l %t0.ll  | @filecheck %s --check-prefix=CHECK_F
+// RUN: @count -l %t1.ll  | @filecheck %s --check-prefix=CHECK_F
+// RUN: @count -l %t0.bc  | @filecheck %s --check-prefix=CHECK_F
+// RUN: @count -l %t1.bc  | @filecheck %s --check-prefix=CHECK_F
+// RUN: @count -l %t1.o   | @filecheck %s --check-prefix=CHECK_F
+// RUN: @count -l %t1.exe | @filecheck %s --check-prefix=CHECK_F
+// RUN: @count -l %t1     | @filecheck %s --check-prefix=CHECK_F
+
+// UNSUPPORTED: OS_MACOS
+
+// CHECK_A: Output name ('.bc' extension) should match codegen type (-b|--bitcode)
+// CHECK_B: Output name ('.ll' extension) should match codegen type (-S|--llvmir)
+// CHECK_C: Output name ('.o' extension) should match codegen type (-c)
+// CHECK_D: Output name ('.exe' extension) should match codegen type: CodeGen_Bitcode specified
+// CHECK_E: Output name (no/unknown extension) should match codegen type: CodeGen_Bitcode specified
+
+// CHECK_F-NOT: ^0

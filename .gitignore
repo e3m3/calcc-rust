@@ -15,5 +15,5 @@ Cargo.lock
 
 *.bak
 
-tests/lit-llvm/.lit_test_times.txt
-tests/lit-llvm/Output
+tests/lit-tests/.lit_test_times.txt
+tests/lit-tests/Output

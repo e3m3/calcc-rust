@@ -1,9 +1,0 @@
-// RUN: @calcc --verbose --lex -e 256
-
-// CHECK: Processing input 'Expression:256'
-// CHECK: Read 3 bytes from buffer at line 0
-// CHECK: Found char '2' in line 0 at pos 0
-// CHECK: Found char '5' in line 0 at pos 1
-// CHECK: Found char '6' in line 0 at pos 2
-// CHECK: Lexed token 'Number:256'
-// CHECK: Lexed token 'Eoi:'

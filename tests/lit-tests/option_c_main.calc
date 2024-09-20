@@ -1,0 +1,60 @@
+// RUN: not @calcc --llvmir %s     --no-main --c-main 2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: not @calcc --llvmir %s     --c-main --no-main 2>&1 | @filecheck %s --check-prefix=CHECK_A
+
+// RUN:     @calcc -v --ir  %s     --c-main           2>&1 | @filecheck %s --check-prefix=CHECK_B
+
+// RUN:     @calcc --llvmir %s -O0 --c-main           2>&1 | @filecheck %s --check-prefix=CHECK_C
+
+// CHECK_A:         Incompatible compiler flags: '-k|--no-main' and '-C|--c-main'
+
+// CHECK_B:         #include <stdio.h>
+// CHECK_B:         #include <stdlib.h>
+
+// CHECK_B:         #define BASE 1
+// CHECK_B:         #define NUM_ARGS 2
+// CHECK_B:         #define USAGE "<exe> <arg0>, <arg1>\n"
+
+// CHECK_B:         typedef long long t_i64;
+// CHECK_B:         extern t_i64 calcc_main(i64, i64);
+
+// CHECK_B:         int main(int argc, char **argv) {
+// CHECK_B:             if (argc != BASE + NUM_ARGS) {
+// CHECK_B:                 (void) fprintf(stderr, "Invalid number of args to main. Expected %d args\n", NUM_ARGS);
+// CHECK_B:                 (void) fprintf(stderr, USAGE);
+// CHECK_B:                 return 1;
+// CHECK_B:             }
+
+// CHECK_B:             /* Parameter declaration section: */
+// CHECK_B:             const i64 p0 = (i64)atoll(argv[BASE + 0]);
+// CHECK_B:             const i64 p1 = (i64)atoll(argv[BASE + 1]);
+
+// CHECK_B:             /* Function call section: */
+// CHECK_B:             const t_i64 result = calcc_main(p0, p1);
+// CHECK_B:             (void) printf("calcc_main result: %lld\n", result);
+
+// CHECK_B:             return 0;
+// CHECK_B:         }
+
+// CHECK_C-LABEL:   ; ModuleID = 'calcc'
+
+// CHECK_C-LABEL:   define i64 @calcc_main(i64 %0, i64 %1) {
+// CHECK_C-LABEL:   entry:
+// CHECK_C:           %a = alloca i64, align 8
+// CHECK_C:           store i64 %0, ptr %a, align 4
+// CHECK_C:           %b = alloca i64, align 8
+// CHECK_C:           store i64 %1, ptr %b, align 4
+// CHECK_C:           %v0 = load i64, ptr %a, align 4
+// CHECK_C:           %v1 = load i64, ptr %a, align 4
+// CHECK_C:           %v2 = mul nsw i64 %v0, %v1
+// CHECK_C:           %v3 = load i64, ptr %b, align 4
+// CHECK_C:           %v4 = mul nsw i64 2, %v3
+// CHECK_C:           %v5 = add nsw i64 %v2, %v4
+// CHECK_C:           %v6 = sub nsw i64 %v5, 3
+// CHECK_C:           ret i64 %v6
+// CHECK_C:         }
+
+// COM: CHECK_C-LABEL:   i32 define @main(i32 %vArgc, ptr %vArgv)
+// COM: CHECK_C-LABEL:   entry:
+// COM: CHECK_C:           %[[REG0:.+]] = call i64 @calcc_main(i64 %[[REG1:.+]], i64 %[[REG2:.+]])
+
+with: a,b: a*a + 2*b - 3

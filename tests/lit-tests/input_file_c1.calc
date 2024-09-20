@@ -1,0 +1,9 @@
+// RUN: @calcc -C -O0 %s -o %t0.out  &&  %t0.out 3 4 5  | @filecheck %s
+// RUN: @calcc -C -O3 %s -o %t1.out  &&  %t1.out 3 4 5  | @filecheck %s
+// RUN: @calcc -C -O0 %s -o %t2.out  &&  %t2.out 6 8 10 | @filecheck %s
+// RUN: @calcc -C -O3 %s -o %t3.out  &&  %t3.out 6 8 10 | @filecheck %s
+
+// CHECK:       calcc_main result: 0
+
+// Implement Pythagorean theorem check (for integer triangles): 0 result => passing check
+with: a,b,c: c*c - (a*a + b*b)

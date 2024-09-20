@@ -1,0 +1,38 @@
+// RUN: @calcc --verbose -k -S --ast --parse -e "with: a: 32*a/4 + a/10 - 1"   2>&1   | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc --verbose -k -S --ast --parse -e "with: a,b: 32*a/b + a/10 - 1" 2>&1   | @filecheck %s --check-prefix=CHECK_B
+
+// CHECK_A: Consumed expected token 'With' at position '0'
+// CHECK_A: Consumed expected token 'Colon' at position '1'
+// CHECK_A: Consumed expected token 'Ident' at position '2'
+// CHECK_A: Consumed expected token 'Colon' at position '3'
+// CHECK_A: Consumed expected token 'Number' at position '4'
+// CHECK_A: Consumed expected token 'Star' at position '5'
+// CHECK_A: Consumed expected token 'Ident' at position '6'
+// CHECK_A: Consumed expected token 'Slash' at position '7'
+// CHECK_A: Consumed expected token 'Number' at position '8'
+// CHECK_A: Consumed expected token 'Plus' at position '9'
+// CHECK_A: Consumed expected token 'Ident' at position '10'
+// CHECK_A: Consumed expected token 'Slash' at position '11'
+// CHECK_A: Consumed expected token 'Number' at position '12'
+// CHECK_A: Consumed expected token 'Minus' at position '13'
+// CHECK_A: Consumed expected token 'Number' at position '14'
+// CHECK_A: AST: WithDecl(Vars([a]),BinaryOp(Sub,BinaryOp(Add,BinaryOp(Div,BinaryOp(Mul,32,Ident(a)),4),BinaryOp(Div,Ident(a),10)),1))
+
+// CHECK_B: Consumed expected token 'With' at position '0'
+// CHECK_B: Consumed expected token 'Colon' at position '1'
+// CHECK_B: Consumed expected token 'Ident' at position '2'
+// CHECK_B: Consumed expected token 'Comma' at position '3'
+// CHECK_B: Consumed expected token 'Ident' at position '4'
+// CHECK_B: Consumed expected token 'Colon' at position '5'
+// CHECK_B: Consumed expected token 'Number' at position '6'
+// CHECK_B: Consumed expected token 'Star' at position '7'
+// CHECK_B: Consumed expected token 'Ident' at position '8'
+// CHECK_B: Consumed expected token 'Slash' at position '9'
+// CHECK_B: Consumed expected token 'Ident' at position '10'
+// CHECK_B: Consumed expected token 'Plus' at position '11'
+// CHECK_B: Consumed expected token 'Ident' at position '12'
+// CHECK_B: Consumed expected token 'Slash' at position '13'
+// CHECK_B: Consumed expected token 'Number' at position '14'
+// CHECK_B: Consumed expected token 'Minus' at position '15'
+// CHECK_B: Consumed expected token 'Number' at position '16'
+// CHECK_B: AST: WithDecl(Vars([a,b]),BinaryOp(Sub,BinaryOp(Add,BinaryOp(Div,BinaryOp(Mul,32,Ident(a)),Ident(b)),BinaryOp(Div,Ident(a),10)),1))

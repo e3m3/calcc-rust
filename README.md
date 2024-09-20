@@ -19,7 +19,7 @@ Learning [Rust][1] [[1]] by implementing the calc langauge using the [llvm-sys][
 Implements the calc language, inspired by the [C++][3] [[3]] implementation presented by Macke and Kwan in [[4]] and [[5]].
 
 Accepted factors in the grammar have been extended for convenience (see `src/{lex,parse}.rs` and `tests/lit-llvm/`).
-The output of the compiler is LLVM IR or LLVM bytecode [[6]].
+The output of the compiler is LLVM IR, LLVM bitcode, an object file, or executable file [[6]].
 
 
 ##  Language
@@ -95,7 +95,9 @@ Notes:
 
 *   llvm18 and llvm-sys (or llvm version matching llvm-sys)
 
-*   python3-lit, FileCheck, clang (for testing)
+*   clang-18 (for executables and '-C|--c-main' flags)
+
+*   python3-lit, FileCheck (for testing)
 
     *   By default, `tests/lit-tests-llvm.rs` will search for the lit executable in the `$PYTHON_VENV_PATH/bin`
         (if it exists) or the system's `/usr/bin`.
@@ -143,17 +145,26 @@ usage: calcc [OPTIONS] <INPUT>
 INPUT              '-' (i.e., Stdin) or a file path
 OPTIONS:
 --ast              Print the AST after parsing
+-b|--bitcode       Output LLVM bitcode (post-optimization) (.bc if used with -o)
+-c                 Output an object file (post-optimization) (.o if used with -o)
 --drop             Drop unknown tokens instead of failing
 -e|--expr[=]<E>    Process expression E instead of INPUT file
 -h|--help          Print this list of command line options
 --lex              Exit after running the lexer
--S|--llvmir        Exit after outputting LLVM IR (post-optimization) instead of byte code
---nomain           Omit linking with main module (i.e., output kernel only)
---notarget         Omit target specific configuration in LLVM IR/bytecode
--o[=]<F>           Output to LLVM IR (.ll) or bytecode (.bc) file F instead of Stdout
+--ir               Exit after printing IR (pre-optimization)
+-S|--llvmir        Output LLVM IR (post-optimization) (.ll if used with -o)
+-k|--no-main       Omit linking with main module (i.e., output kernel only)
+                   When this option is selected, an executable cannot be generated
+--notarget         Omit target specific configuration in LLVM IR/bitcode
+-o[=]<F>           Output to file F instead of Stdout
+                   If no known extension is used (.bc|.exe|.ll|.o) an executable is assumed
+                   An executable requires llc and clang to be installed
 -O<0|1|2|3>        Set the optimization level (default: O2)
 --parse            Exit after running the parser
 --sem              Exit after running the semantics check
+-C|--c-main        Link with a C-derived main module (src/main.c.template)
+                   This option is required for generating object files and executables on MacOS
+                   and requires clang to be installed
 -v|--verbose       Enable verbose output
 --version          Display the package version and license information
 ```

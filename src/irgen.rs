@@ -3,7 +3,18 @@
 
 extern crate llvm_sys as llvm;
 
-use llvm::core::*;
+use llvm::core::LLVMAddFunction;
+use llvm::core::LLVMAppendBasicBlockInContext;
+use llvm::core::LLVMBuildLoad2;
+use llvm::core::LLVMBuildNSWAdd;
+use llvm::core::LLVMBuildNSWMul;
+use llvm::core::LLVMBuildNSWSub;
+use llvm::core::LLVMBuildRet;
+use llvm::core::LLVMBuildSDiv;
+use llvm::core::LLVMBuildStore;
+use llvm::core::LLVMFunctionType;
+use llvm::core::LLVMGetParam;
+use llvm::core::LLVMPositionBuilderAtEnd;
 use llvm::prelude::LLVMBasicBlockRef;
 use llvm::prelude::LLVMBool;
 use llvm::prelude::LLVMTypeRef;
@@ -34,7 +45,7 @@ pub struct IRGen<'a, 'b> {
 }
 
 impl <'a, 'b> IRGen<'a, 'b> {
-    pub fn new(bundle: &'a mut ModuleBundle<'b>) -> Self {
+    fn new(bundle: &'a mut ModuleBundle<'b>) -> Self {
         IRGen{bundle}
     }
 

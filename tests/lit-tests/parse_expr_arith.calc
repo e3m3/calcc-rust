@@ -1,0 +1,49 @@
+// RUN: @calcc --verbose -k -S --ast --parse -e "32 + 50"            2>&1 | @filecheck %s --check-prefix=CHECK_A
+// RUN: @calcc --verbose -k -S --ast --parse -e "32 - 50"            2>&1 | @filecheck %s --check-prefix=CHECK_B
+// RUN: @calcc --verbose -k -S --ast --parse -e "32 / 50"            2>&1 | @filecheck %s --check-prefix=CHECK_C
+// RUN: @calcc --verbose -k -S --ast --parse -e "32 * 50"            2>&1 | @filecheck %s --check-prefix=CHECK_D
+// RUN: @calcc --verbose -k -S --ast --parse -e "32*2/4 + 50/10 - 1" 2>&1 | @filecheck %s --check-prefix=CHECK_E
+// RUN: @calcc --verbose -k -S --ast --parse -e "32*-2/4 - 1"        2>&1 | @filecheck %s --check-prefix=CHECK_F
+
+// CHECK_A: Consumed expected token 'Number' at position '0'
+// CHECK_A: Consumed expected token 'Plus' at position '1'
+// CHECK_A: Consumed expected token 'Number' at position '2'
+// CHECK_A: AST: BinaryOp(Add,32,50)
+
+// CHECK_B: Consumed expected token 'Number' at position '0'
+// CHECK_B: Consumed expected token 'Minus' at position '1'
+// CHECK_B: Consumed expected token 'Number' at position '2'
+// CHECK_B: AST: BinaryOp(Sub,32,50)
+
+// CHECK_C: Consumed expected token 'Number' at position '0'
+// CHECK_C: Consumed expected token 'Slash' at position '1'
+// CHECK_C: Consumed expected token 'Number' at position '2'
+// CHECK_C: AST: BinaryOp(Div,32,50)
+
+// CHECK_D: Consumed expected token 'Number' at position '0'
+// CHECK_D: Consumed expected token 'Star' at position '1'
+// CHECK_D: Consumed expected token 'Number' at position '2'
+// CHECK_D: AST: BinaryOp(Mul,32,50)
+
+// CHECK_E: Consumed expected token 'Number' at position '0'
+// CHECK_E: Consumed expected token 'Star' at position '1'
+// CHECK_E: Consumed expected token 'Number' at position '2'
+// CHECK_E: Consumed expected token 'Slash' at position '3'
+// CHECK_E: Consumed expected token 'Number' at position '4'
+// CHECK_E: Consumed expected token 'Plus' at position '5'
+// CHECK_E: Consumed expected token 'Number' at position '6'
+// CHECK_E: Consumed expected token 'Slash' at position '7'
+// CHECK_E: Consumed expected token 'Number' at position '8'
+// CHECK_E: Consumed expected token 'Minus' at position '9'
+// CHECK_E: Consumed expected token 'Number' at position '10'
+// CHECK_E: AST: BinaryOp(Sub,BinaryOp(Add,BinaryOp(Div,BinaryOp(Mul,32,2),4),BinaryOp(Div,50,10)),1)
+
+// CHECK_F: Consumed expected token 'Number' at position '0'
+// CHECK_F: Consumed expected token 'Star' at position '1'
+// CHECK_F: Consumed expected token 'Minus' at position '2'
+// CHECK_F: Consumed expected token 'Number' at position '3'
+// CHECK_F: Consumed expected token 'Slash' at position '4'
+// CHECK_F: Consumed expected token 'Number' at position '5'
+// CHECK_F: Consumed expected token 'Minus' at position '6'
+// CHECK_F: Consumed expected token 'Number' at position '7'
+// CHECK_F: AST: BinaryOp(Sub,BinaryOp(Div,BinaryOp(Mul,32,-2),4),1)

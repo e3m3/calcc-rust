@@ -1,0 +1,8 @@
+// RUN: @calcc -e "4096"               -o %t0.out   &&  %t0.out      | @filecheck %s
+// RUN: @calcc -e "1024*32/8"          -o %t1.out   &&  %t1.out      | @filecheck %s
+// RUN: @calcc -e "with: a: a*32/8"    -o %t2.out   &&  %t2.out 1024 | @filecheck %s
+// RUN: @calcc -e "with: a: 1024*a/8"  -o %t3.out   &&  %t3.out 32   | @filecheck %s
+// RUN: @calcc -e "with: a: 1024*32/a" -o %t4.out   &&  %t4.out 8    | @filecheck %s
+
+// UNSUPPORTED: OS_MACOS
+// CHECK:       calcc_main result: 4096

@@ -35,7 +35,7 @@ pub enum TokenKind {
 }
 
 pub fn token_kind_to_string(k: TokenKind) -> String {
-    String::from(match k {
+    match k {
         TokenKind::Comma    => "Comma",
         TokenKind::Comment  => "Comment",
         TokenKind::Colon    => "Colon",
@@ -51,7 +51,7 @@ pub fn token_kind_to_string(k: TokenKind) -> String {
         TokenKind::Star     => "Star",
         TokenKind::Unknown  => "Unknown",
         TokenKind::With     => "With",
-    })
+    }.to_string()
 }
 
 #[derive(Clone)]
@@ -273,17 +273,7 @@ impl <'a, T: Read> Lexer<'a, T> {
     }
 
     fn is_other(c: char) -> bool {
-        match c {
-            ',' => true,
-            ':' => true,
-            '-' => true,
-            '(' => true,
-            ')' => true,
-            '+' => true,
-            '/' => true,
-            '*' => true,
-            _   => false,
-        }
+        matches!(c, ',' | ':' | '-' | '(' | ')' | '+' | '/' | '*')
     }
 
     fn is_whitespace(c: char) -> bool {

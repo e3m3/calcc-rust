@@ -1,0 +1,41 @@
+// Copyright 2024, Giordano Salvador
+// SPDX-License-Identifier: BSD-3-Clause
+
+/// Description:    A C-stub used to generate the main module for linking during compile time.
+///                 Values prefixed by `@@` are expected inputs from the compiler for text substitution.
+///                 Inputs:
+///                 *   NUM_ARGS            : a `usize` for the length of the parameters list
+///                 *   USAGE_ARGS          : a comma separated list of args for the usage prompt
+///                                         : (e.g., <arg0>, <arg1>, ...
+///                 *   PARAM_TYPES_LIST    : a comma separated list of types for the callee prototype
+///                 *   PARAM_DECLS_LIST    : a sequence of statements assigning temporaries for the callee
+///                                           (e.g., const t_i64 p0 = (t_i64)atoll(argv[BASE + 0]); ... )
+///                 *   PARAMS_LIST         : a comma separated list of uses of the temporaries for the callee
+///                                           (e.g., p0, p1, ... )
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define BASE 1
+#define NUM_ARGS @@NUM_ARGS
+#define USAGE "<exe> @@USAGE_ARGS\n"
+
+typedef long long t_i64;
+extern t_i64 calcc_main(@@PARAM_TYPES_LIST);
+
+int main(int argc, char **argv) {
+    if (argc != BASE + NUM_ARGS) {
+        (void) fprintf(stderr, "Invalid number of args to main. Expected %d args\n", NUM_ARGS);
+        (void) fprintf(stderr, USAGE);
+        return 1;
+    }
+
+    /* Parameter declaration section: */
+    @@PARAM_DECLS_LIST
+
+    /* Function call section: */
+    const t_i64 result = calcc_main(@@PARAMS_LIST);
+    (void) printf("calcc_main result: %lld\n", result);
+
+    return 0;
+}
