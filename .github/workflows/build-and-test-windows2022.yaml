@@ -1,0 +1,31 @@
+# Copyright 2024, Giordano Salvador
+# SPDX-License-Identifier: BSD-3-Clause
+
+name: Build-and-test
+
+on:
+
+  workflow_call:
+    inputs:
+      build_mode:
+        description: Build optimization level
+        required: true
+        type: string
+
+jobs:
+
+  build-and-test:
+    runs-on: windows-2022
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+    steps:
+
+    - name: Checkout source
+      uses: actions/checkout@v4
+
+    - name: Build source and test
+      run: |
+        $env:BUILD_MODE="${{ inputs.build_mode }}"
+        $env:WORKSPACE="${{ github.workspace }}"
+        iex ".\scripts\build-and-test-windows-2022.ps1"

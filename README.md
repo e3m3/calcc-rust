@@ -15,6 +15,8 @@ Author/Maintainer:  Giordano Salvador <73959795+e3m3@users.noreply.github.com>
 [![MacOS 13](https://github.com/e3m3/calcc-rust/actions/workflows/macos-13.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/macos-13.yaml)
 [![MacOS 14](https://github.com/e3m3/calcc-rust/actions/workflows/macos-14.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/macos-14.yaml)
 
+[![Windows 2022](https://github.com/e3m3/calcc-rust/actions/workflows/windows-2022.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/windows-2022.yaml)
+
 Learning [Rust][1] [[1]] by implementing the calc langauge using the [llvm-sys][2] [[2]] crate.
 Implements the calc language, inspired by the [C++][3] [[3]] implementation presented by
     Macke and Kwan in [[4]] and [[5]].

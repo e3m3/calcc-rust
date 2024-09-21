@@ -1,0 +1,25 @@
+# Copyright 2024, Giordano Salvador
+# SPDX-License-Identifier: BSD-3-Clause
+
+name: Windows 2022
+
+on:
+
+  workflow_dispatch:
+    branches: [ "main" ]
+    inputs:
+      build_mode:
+        description: Build optimization level
+        required: true
+        default: debug
+        type: choice
+        options:
+          - debug
+          - release
+
+jobs:
+
+  run:
+    uses: e3m3/calcc-rust/.github/workflows/build-and-test-windows2022.yaml@main
+    with:
+      build_mode: ${{ inputs.build_mode }}

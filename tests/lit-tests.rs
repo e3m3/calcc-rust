@@ -67,9 +67,14 @@ mod tests{
                     }
                 },
             "windows"   => {
-                eprintln!("Windows not supported");
-                assert!(false);
-                String::new()
+                match env::var("PYTHON_VENV_PATH") {
+                    Ok(path)    => append_lit(Path::new(&path)),
+                    Err(_)      => {
+                        eprintln!("No supported location for 'lit' found");
+                        assert!(false);
+                        String::new()
+                    },
+                }
             },
             _           => {
                 eprintln!("OS not supported");
