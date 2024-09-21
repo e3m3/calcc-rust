@@ -90,7 +90,7 @@ Notes:
     where the left term is `Number` with the constant value `0`.
 
 
-##  Prequisites
+##  Prerequisites
 
 *   libstdc++
 
