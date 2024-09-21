@@ -5,6 +5,7 @@ extern crate llvm_sys as llvm;
 
 use llvm::analysis::LLVMVerifierFailureAction;
 use llvm::analysis::LLVMVerifyModule;
+use llvm::bit_writer::LLVMWriteBitcodeToFD;
 use llvm::bit_writer::LLVMWriteBitcodeToFile;
 use llvm::core::LLVMAddFunction;
 use llvm::core::LLVMBuildAlloca;
@@ -129,7 +130,12 @@ impl <'a> ModuleBundle<'a> {
         is_va_arg: bool,
     ) -> LLVMValueRef {
         let value = unsafe {
-            let t_f = LLVMFunctionType(t_ret, params.as_mut_ptr(), params.len() as c_uint, is_va_arg as LLVMBool);
+            let t_f = LLVMFunctionType(
+                t_ret,
+                params.as_mut_ptr(),
+                params.len() as c_uint,
+                is_va_arg as LLVMBool
+            );
             LLVMAddFunction(self.module, name.as_ptr() as *const c_char, t_f)
         };
         self.insert_value(name, value);
@@ -198,8 +204,18 @@ impl <'a> ModuleBundle<'a> {
     }
 
     pub fn write_bitcode_to_file(&mut self, f: &str) -> () {
-        let name = format!("{}\0", f);
-        let result: c_int = unsafe { LLVMWriteBitcodeToFile(self.module, name.as_ptr() as *const c_char) };
+        let (name, result) = if f == "-" {
+            let result: c_int = unsafe {
+                LLVMWriteBitcodeToFD(self.module, 1, false as LLVMBool, false as LLVMBool)
+            };
+            ("Stdout".to_string(), result)
+        } else {
+            let name = format!("{}\0", f);
+            let result: c_int = unsafe {
+                LLVMWriteBitcodeToFile(self.module, name.as_ptr() as *const c_char)
+            };
+            (name, result)
+        };
         if result != 0 as c_int {
             eprintln!("Failed to write module to file '{}'", name);
             exit(ExitCode::WriteError);
@@ -257,9 +273,10 @@ impl <'a> ModuleBundle<'a> {
         match *output {
             OutputType::Stdout  => {
                 match options.codegen_type {
-                    CodeGenType::Llvmir => println!("{}", self),
-                    _ => {
-                        eprintln!("Unimplemented: writing {} to Stdout", options.codegen_type);
+                    CodeGenType::Llvmir     => println!("{}", self),
+                    CodeGenType::Bitcode    => self.write_bitcode_to_file("-"),
+                    _                       => {
+                        eprintln!("Unexpected  '{}' for output to stdout", options.codegen_type);
                         return false;
                     },
                 }

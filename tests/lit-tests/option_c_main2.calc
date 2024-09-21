@@ -1,4 +1,4 @@
-// RUN: not @calcc %s 2>&1 | @filecheck %s
+// RUN: not @calcc %s -o %t.out 2>&1 | @filecheck %s
 
 // REQUIRES:    OS_MACOS
 

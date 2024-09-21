@@ -63,7 +63,11 @@ impl <'a> Parser<'a> {
         let t: &Token = self.get_token(iter);
         if t.is(k) {
             if self.options.verbose {
-                eprintln!("Consumed expected token '{}' at position '{}'", token_kind_to_string(k), iter.position);
+                eprintln!(
+                    "Consumed expected token '{}' at position '{}'",
+                    token_kind_to_string(k),
+                    iter.position
+                );
             }
             iter.token = t.clone();
             iter.position += 1;

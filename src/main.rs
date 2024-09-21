@@ -106,7 +106,11 @@ fn set_codegen_type(options: &mut RunOptions, codegen_type: CodeGenType) -> () {
     if options.codegen_type == CodeGenType::Unset {
         options.codegen_type = codegen_type;
     } else {
-        eprintln!("Incompatible compiler flags for output type: {} and {}", options.codegen_type, codegen_type);
+        eprintln!(
+            "Incompatible compiler flags for output type: {} and {}",
+            options.codegen_type,
+            codegen_type
+        );
         exit(ExitCode::ArgParseError);
     }
 }
@@ -145,12 +149,27 @@ fn get_extension_from_filename(name: &str) -> ExtType {
 /// Checks to ensure valid combination for BodyType, CodeGenType, and OutputType
 fn check_options_configuration(options: &RunOptions, output: &OutputType) -> () {
     match *output {
-        OutputType::Stdout  => (),
+        OutputType::Stdout  => if !options.early_exit() {
+            match options.codegen_type {
+                CodeGenType::Object     => {
+                    eprintln!("Output to Stdout not supported for object files");
+                    exit(ExitCode::ArgParseError);
+                },
+                CodeGenType::Executable => {
+                    eprintln!("Output to Stdout not supported for executable files");
+                    exit(ExitCode::ArgParseError);
+                },
+                _                       => (),
+            }
+        },
         OutputType::File(f) => {
             let t = options.codegen_type;
             match get_extension_from_filename(f) {
                 ExtType::None   => if t != CodeGenType::Executable {
-                    eprintln!("Output name (no/unknown extension) should match codegen type: {} specified", t);
+                    eprintln!(
+                        "Output name (no/unknown extension) should match codegen type: {} specified",
+                        t
+                    );
                     exit(ExitCode::ArgParseError);
                 },
                 ExtType::BC     => if t != CodeGenType::Bitcode {
@@ -219,7 +238,7 @@ fn parse_args<'a>(
             "--llvmir"      => set_codegen_type(options, CodeGenType::Llvmir),
             "--no-main"     => set_body_type(options, BodyType::NoMain),
             "--notarget"    => options.no_target = true,
-            "-o"            => *output = OutputType::File(parse_arg_after(args, &mut i)),
+            "-o"            => *output = OutputType::new(parse_arg_after(args, &mut i)),
             "-O0"           => options.opt_level = OptLevel::O0,
             "-O1"           => options.opt_level = OptLevel::O1,
             "-O2"           => options.opt_level = OptLevel::O2,
@@ -291,7 +310,7 @@ fn parse_arg_complex<'a>(
                 match &arg[0..j] {
                     "-e"        => *input = InputType::Expr(&arg[j + 1..]),
                     "--expr"    => *input = InputType::Expr(&arg[j + 1..]),
-                    "-o"        => *output = OutputType::File(&arg[j + 1..]),
+                    "-o"        => *output = OutputType::new(&arg[j + 1..]),
                     _           => {
                         eprintln!("Unrecognized argument '{}'", arg);
                         help(ExitCode::ArgParseError);

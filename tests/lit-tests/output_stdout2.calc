@@ -1,0 +1,14 @@
+// RUN:     @calcc -O0 -C --llvmir  -o - %s                    | @filecheck %s --check-prefix=CHECK_A
+// RUN:     @calcc -O0 -C --bitcode -o - %s | @llvm-dis -o -   | @filecheck %s --check-prefix=CHECK_A
+// RUN: not @calcc     -C -c        -o - %s 2>&1               | @filecheck %s --check-prefix=CHECK_B
+// RUN: not @calcc     -C           -o - %s 2>&1               | @filecheck %s --check-prefix=CHECK_C
+
+// CHECK_A-LABEL:   define i64 @calcc_main() {
+// CHECK_A-LABEL:   entry:
+// CHECK_A:           ret i64 10
+// CHECK_A:         }
+
+// CHECK_B:         Output to Stdout not supported for object files
+// CHECK_C:         Output to Stdout not supported for executable files
+
+10

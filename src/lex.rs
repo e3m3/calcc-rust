@@ -215,7 +215,12 @@ impl <'a, T: Read> Lexer<'a, T> {
         } else if Self::is_letter(c) {
             let pos_end: usize = self.collect_token_sequence(pos_start + 1, Self::is_ident);
             let text = String::from(&self.line[pos_start..pos_end]);
-            self.form_token(t, pos_start, pos_end, if text == "with" {TokenKind::With} else {TokenKind::Ident});
+            self.form_token(
+                t,
+                pos_start,
+                pos_end,
+                if text == "with" {TokenKind::With} else {TokenKind::Ident}
+            );
         } else if Self::is_slash(c) {
             if self.has_next_in_line(pos_start + 1) {
                 c = self.next_char_in_line(pos_start + 1);

@@ -71,6 +71,15 @@ pub enum OutputType<'a> {
     File(&'a str),
 }
 
+impl <'a> OutputType<'a> {
+    pub fn new(f: &'a str) -> Self {
+        match f {
+            "-" => OutputType::Stdout,
+            _   => OutputType::File(f),
+        }
+    }
+}
+
 impl <'a> fmt::Display for OutputType<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match self {

@@ -16,9 +16,11 @@ Author/Maintainer:  Giordano Salvador <73959795+e3m3@users.noreply.github.com>
 [![MacOS 14](https://github.com/e3m3/calcc-rust/actions/workflows/macos-14.yaml/badge.svg?event=workflow_dispatch)](https://github.com/e3m3/calcc-rust/actions/workflows/macos-14.yaml)
 
 Learning [Rust][1] [[1]] by implementing the calc langauge using the [llvm-sys][2] [[2]] crate.
-Implements the calc language, inspired by the [C++][3] [[3]] implementation presented by Macke and Kwan in [[4]] and [[5]].
+Implements the calc language, inspired by the [C++][3] [[3]] implementation presented by
+    Macke and Kwan in [[4]] and [[5]].
 
-Accepted factors in the grammar have been extended for convenience (see `src/{lex,parse}.rs` and `tests/lit-llvm/`).
+Accepted factors in the grammar have been extended for convenience (see `src/{lex,parse}.rs`
+    and `tests/lit-llvm/`).
 The output of the compiler is LLVM IR, LLVM bitcode, an object file, or executable file [[6]].
 
 
@@ -81,10 +83,11 @@ term    ::= factor ( Slash | Star ) factor
 
 Notes:
 
-*   The grammar rules above use the `tokenkind` as a shorthand for a `token` object as described by the lexer rules.
+*   The grammar rules above use the `tokenkind` as a shorthand for a `token` object as described
+    by the lexer rules.
 
-*   In the AST, a factor with a leading `Minus` token is represented as a subtraction expression where the left term
-    is `Number` with the constant value `0`.
+*   In the AST, a factor with a leading `Minus` token is represented as a subtraction expression
+    where the left term is `Number` with the constant value `0`.
 
 
 ##  Prequisites
@@ -99,8 +102,8 @@ Notes:
 
 *   python3-lit, FileCheck (for testing)
 
-    *   By default, `tests/lit-tests-llvm.rs` will search for the lit executable in the `$PYTHON_VENV_PATH/bin`
-        (if it exists) or the system's `/usr/bin`.
+    *   By default, `tests/lit-tests-llvm.rs` will search for the lit executable in
+        `$PYTHON_VENV_PATH/bin` (if it exists) or the system's `/usr/bin`.
 
 *   [docker|podman] (for testing/containerization)
 

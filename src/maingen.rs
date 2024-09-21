@@ -89,7 +89,12 @@ impl <'a, 'b> MainGen<'a, 'b> {
         let f_name = ModuleBundle::value_name(self.bundle.name.as_str());
         unsafe {
             let t_ret = self.bundle.t_i32;
-            let t_f = LLVMFunctionType(t_ret, param_types.as_mut_ptr(), param_types.len() as u32, false as LLVMBool);
+            let t_f = LLVMFunctionType(
+                t_ret,
+                param_types.as_mut_ptr(),
+                param_types.len() as u32,
+                false as LLVMBool
+            );
             let f = LLVMAddFunction(self.bundle.module, f_name.as_ptr() as *const c_char, t_f);
             self.bundle.f = Some(f);
             self.bundle.f_sig = Some(FunctionSignature::new(t_ret, param_types));
@@ -205,7 +210,12 @@ impl <'a, 'b> MainGen<'a, 'b> {
         let mut param_types: Vec<LLVMTypeRef> = vec![self.bundle.t_opaque, callee_sig.t_ret];
         let n = param_types.len();
         unsafe {
-            let t_f = LLVMFunctionType(self.bundle.t_i32, param_types.as_mut_ptr(), n as u32, true as LLVMBool);
+            let t_f = LLVMFunctionType(
+                self.bundle.t_i32,
+                param_types.as_mut_ptr(),
+                n as u32,
+                true as LLVMBool
+            );
             let _ = LLVMBuildCall2(
                 self.bundle.builder,
                 t_f,
@@ -219,7 +229,11 @@ impl <'a, 'b> MainGen<'a, 'b> {
         }
     }
 
-    fn gen_entry_stack(&mut self, bb_entry: LLVMBasicBlockRef, f_sig: &'a FunctionSignature) -> Vec<LLVMValueRef> {
+    fn gen_entry_stack(
+        &mut self,
+        bb_entry: LLVMBasicBlockRef,
+        f_sig: &'a FunctionSignature
+    ) -> Vec<LLVMValueRef> {
         unsafe { LLVMPositionBuilderAtEnd(self.bundle.builder, bb_entry); }
         let _value_ret = self.bundle.gen_alloca(NAME_RETVAL, self.bundle.t_i32);
         let _value_argc = self.bundle.gen_alloca(NAME_ARGC, self.bundle.t_i32);
@@ -239,7 +253,11 @@ impl <'a, 'b> MainGen<'a, 'b> {
         let f = self.bundle.f.unwrap();
         let name_block = ModuleBundle::value_name("ret_label");
         unsafe {
-            let bb = LLVMAppendBasicBlockInContext(self.bundle.context, f, name_block.as_ptr() as *const c_char);
+            let bb = LLVMAppendBasicBlockInContext(
+                self.bundle.context,
+                f,
+                name_block.as_ptr() as *const c_char
+            );
             LLVMPositionBuilderAtEnd(self.bundle.builder, bb);
             bb
         }
@@ -261,7 +279,12 @@ impl <'a, 'b> MainGen<'a, 'b> {
         }
     }
 
-    fn gen_err_block(&mut self, bb_err: LLVMBasicBlockRef, bb_ret: LLVMBasicBlockRef, callee_arg_len: usize) -> () {
+    fn gen_err_block(
+        &mut self,
+        bb_err: LLVMBasicBlockRef,
+        bb_ret: LLVMBasicBlockRef,
+        callee_arg_len: usize
+    ) -> () {
         unsafe { LLVMPositionBuilderAtEnd(self.bundle.builder, bb_err) };
         let name_retval = ModuleBundle::value_name(NAME_RETVAL);
         let name_stderr = ModuleBundle::value_name(NAME_STDERR);
@@ -384,7 +407,9 @@ impl <'a, 'b> MainGen<'a, 'b> {
         let mut args: Vec<LLVMValueRef> = Vec::new();
         for i in 1..callee_values.len() {
             let name = self.bundle.scope.next_value_name();
-            let t_arg = callee_sig.params.get(i - 1).expect("The first item in callee_values should be the return value");
+            let t_arg = callee_sig.params
+                .get(i - 1)
+                .expect("The first item in callee_values should be the return value");
             let value_arg = callee_values.get(i).unwrap();
             let value_load = unsafe {
                 LLVMBuildLoad2(
@@ -427,7 +452,10 @@ impl <'a, 'b> MainGen<'a, 'b> {
 
     fn declare_global_strings(&mut self) -> () {
         let _value_argerr: LLVMValueRef = self.bundle.declare_global_string(NAME_ARG_ERR, STRING_ARG_ERR);
-        let _value_result_str: LLVMValueRef = self.bundle.declare_global_string(NAME_RESULT_STR, STRING_RESULT_STR);
+        let _value_result_str: LLVMValueRef = self.bundle.declare_global_string(
+            NAME_RESULT_STR,
+            STRING_RESULT_STR
+        );
         let _value_usage: LLVMValueRef = self.bundle.declare_global_string(NAME_USAGE, STRING_USAGE);
     }
 
