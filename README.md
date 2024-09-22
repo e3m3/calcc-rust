@@ -20,7 +20,7 @@ Implements the calc language, inspired by the [C++][3] [[3]] implementation pres
     Macke and Kwan in [[4]] and [[5]].
 
 Accepted factors in the grammar have been extended for convenience (see `src/{lex,parse}.rs`
-    and `tests/lit-llvm/`).
+    and `tests/lit-tests/`).
 The output of the compiler is LLVM IR, LLVM bitcode, an object file, or executable file [[6]].
 
 
@@ -96,13 +96,13 @@ Notes:
 
 *   rust-2021
 
-*   llvm18 and llvm-sys (or llvm version matching llvm-sys)
+*   llvm-18 and llvm-sys (or llvm version matching llvm-sys)
 
 *   clang-18 (for executables and '-C|--c-main' flags)
 
 *   python3-lit, FileCheck (for testing)
 
-    *   By default, `tests/lit-tests-llvm.rs` will search for the lit executable in
+    *   By default, `tests/lit-tests.rs` will search for the lit executable in
         `$PYTHON_VENV_PATH/bin` (if it exists) or the system's `/usr/bin`.
 
 *   [docker|podman] (for testing/containerization)
