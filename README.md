@@ -100,7 +100,7 @@ Notes:
 
 *   llvm-18 and llvm-sys (or llvm version matching llvm-sys)
 
-*   clang-18 (for executables and '-C|--c-main' flags)
+*   clang-18 (for executables and `-C|--c-main` flags)
 
 *   python3-lit, FileCheck (for testing)
 
@@ -113,6 +113,8 @@ Notes:
 
     *   An [Ubuntu][8] [[8]] image can be built using `containers/Containerfile.ubuntu*`.
 
+    *   A [Windows][9] [[9]] image can be built using `containers/Dockerfile.windows*`.
+
 
 ##  Setup
 
@@ -123,16 +125,22 @@ Notes:
     cargo test -- --nocapture
     ```
 
-*   Container build and test [podman][9] [[9]]:
+*   Container build and test [podman][10] [[10]]:
 
     ```shell
     podman build -t calcc -f container/Containerfile .
     ```
 
-*   Container build and test [docker][10] [[10]]:
+*   Container build and test [docker][11] [[11]]:
 
     ```shell
     docker build -t calcc -f container/Dockerfile .
+    ```
+
+*   Container build and test [docker-buildx][11] [[11]] for [Windows][9] [[9]]:
+
+    ```shell
+    docker buildx build -t calcc -f container/Dockerfile.windows2022 --platform linux/amd64 --load .
     ```
 
 *   If `make` is installed, you can build the image by running:
@@ -185,8 +193,9 @@ OPTIONS:
 [6]:    https://llvm.org/
 [7]:    https://fedoraproject.org/
 [8]:    https://ubuntu.com/
-[9]:    https://podman.io/
-[10]:   https://www.docker.com/
+[9]:    https://www.microsoft.com/en-us/windows
+[10]:   https://podman.io/
+[11]:   https://www.docker.com/
 
 1.  `https://www.rust-lang.org/`
 
@@ -203,6 +212,8 @@ OPTIONS:
 1.  `https://fedoraproject.org/`
 
 1.  `https://ubuntu.com/`
+
+1.  `https://www.microsoft.com/en-us/windows`
 
 1.  `https://podman.io/`
 

@@ -1,0 +1,26 @@
+# escape=`
+# Copyright 2024, Giordano Salvador
+# SPDX-License-Identifier: BSD-3-Clause
+
+FROM mcr.microsoft.com/powershell:lts-windowsservercore-ltsc2022
+
+LABEL maintainer="Giordano Salvador <73959795+e3m3@users.noreply.github.com>"
+SHELL ["C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "-Command"]
+
+WORKDIR /project
+
+COPY Cargo.toml             /project/
+COPY rust-toolchain.toml    /project/
+COPY LICENSE                /project/
+COPY README.md              /project/
+COPY scripts                /project/scripts/
+COPY src                    /project/src/
+COPY tests                  /project/tests/
+
+RUN pwsh `
+    -InputFormat None `
+    -Command " `
+    $env:BUILD_MODE="debug"; `
+    $env:WORKSPACE="C:\project"; `
+    iex ".\scripts\build-and-test-windows-2022.ps1" `
+    "
