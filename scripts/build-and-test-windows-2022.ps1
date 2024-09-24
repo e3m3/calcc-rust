@@ -3,6 +3,16 @@
 
 Set-PSDebug -Trace 2
 
+#   Set input environment variable defaults
+if ( !$env:BUILD_MODE ) {
+    $env:BUILD_MODE="debug"
+}
+
+if ( !$env:WORKSPACE ) {
+    $env:WORKSPACE="$env:USERPROFILE\Workspace"
+    md "$env:WORKSPACE" -ea 0
+}
+
 #   Bootstrap chocolatey
 Set-ExecutionPolicy Bypass -Scope Process -Force
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
