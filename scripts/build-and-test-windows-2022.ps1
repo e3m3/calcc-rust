@@ -54,7 +54,7 @@ cd "$LLVM_SRC"
 cmake `
     -DCMAKE_BUILD_TYPE="MinSizeRel" `
     -DCMAKE_INSTALL_PREFIX="$LLVM_SRC\install" `
-    -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt;libc;lld;mlir;polly" `
+    -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt;libc;lld;polly" `
     -DLLVM_TARGETS_TO_BUILD="AArch64;X86" `
     -S "$LLVM_SRC\llvm" `
     -B "$LLVM_SRC\build"
