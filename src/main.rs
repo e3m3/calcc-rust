@@ -67,7 +67,7 @@ fn help(code: ExitCode) -> ! {
         "-k|--no-main       Omit linking with main module (i.e., output kernel only)",
         "                   When this option is selected, an executable cannot be generated",
         "--notarget         Omit target specific configuration in LLVM IR/bitcode",
-        "-o[=]<F>           Output to file F instead of Stdout",
+        "-o[=]<F>           Output to file F instead of Stdout ('-' for Stdout)",
         "                   If no known extension is used (.bc|.exe|.ll|.o) an executable is assumed",
         "                   An executable requires llc and clang to be installed",
         "-O<0|1|2|3>        Set the optimization level (default: O2)",
