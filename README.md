@@ -31,7 +31,7 @@ The output of the compiler is LLVM IR, LLVM bitcode, an object file, or executab
 ### Lexer
 
 ```text
-ident           ::= is_letter+ (is_letter | is_number)*
+ident           ::= letter+ (letter | digit)*
 number          ::= digit+ | (`0x` hex_digit+)
 digit           ::= [0-9]
 hex_digit       ::= [a-fA-F0-9]
