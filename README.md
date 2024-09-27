@@ -28,6 +28,8 @@ The output of the compiler is LLVM IR, LLVM bitcode, an object file, or executab
 
 ##  Language
 
+The original license for the calc source can be found here [[7]].
+
 ### Lexer
 
 ```text
@@ -109,11 +111,11 @@ Notes:
 
 *   [docker|podman] (for testing/containerization)
 
-    *   A [Fedora][7] [[7]] image can be built using `containers/Containerfile.fedora*`.
+    *   A [Fedora][8] [[8]] image can be built using `containers/Containerfile.fedora*`.
 
-    *   An [Ubuntu][8] [[8]] image can be built using `containers/Containerfile.ubuntu*`.
+    *   An [Ubuntu][9] [[9]] image can be built using `containers/Containerfile.ubuntu*`.
 
-    *   A [Windows][9] [[9]] image can be built using `containers/Dockerfile.windows*`.
+    *   A [Windows][10] [[10]] image can be built using `containers/Dockerfile.windows*`.
 
 
 ##  Setup
@@ -125,19 +127,19 @@ Notes:
     cargo test -- --nocapture
     ```
 
-*   Container build and test [podman][10] [[10]]:
+*   Container build and test [podman][11] [[11]]:
 
     ```shell
     podman build -t calcc -f container/Containerfile .
     ```
 
-*   Container build and test [docker][11] [[11]]:
+*   Container build and test [docker][12] [[12]]:
 
     ```shell
     docker build -t calcc -f container/Dockerfile .
     ```
 
-*   Container build and test [docker-buildx][11] [[11]] for [Windows][9] [[9]]:
+*   Container build and test [docker-buildx][12] [[12]] for [Windows][10] [[10]]:
 
     ```shell
     docker buildx build -t calcc -f container/Dockerfile.windows2022 --platform linux/amd64 --load .
@@ -191,11 +193,12 @@ OPTIONS:
 [4]:    https://www.packtpub.com/product/learn-llvm-17-second-edition/9781837631346
 [5]:    https://github.com/PacktPublishing/Learn-LLVM-17
 [6]:    https://llvm.org/
-[7]:    https://fedoraproject.org/
-[8]:    https://ubuntu.com/
-[9]:    https://www.microsoft.com/en-us/windows
-[10]:   https://podman.io/
-[11]:   https://www.docker.com/
+[7]:    https://github.com/PacktPublishing/Learn-LLVM-17/blob/main/LICENSE
+[8]:    https://fedoraproject.org/
+[9]:    https://ubuntu.com/
+[10]:   https://www.microsoft.com/en-us/windows
+[11]:   https://podman.io/
+[12]:   https://www.docker.com/
 
 1.  `https://www.rust-lang.org/`
 
@@ -208,6 +211,8 @@ OPTIONS:
 1.  `https://github.com/PacktPublishing/Learn-LLVM-17`
 
 1.  `https://llvm.org/`
+
+1.  `https://github.com/PacktPublishing/Learn-LLVM-17/blob/main/LICENSE`
 
 1.  `https://fedoraproject.org/`
 
