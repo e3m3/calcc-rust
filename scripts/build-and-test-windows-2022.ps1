@@ -58,6 +58,7 @@ $LLVM_SRC="$env:WORKSPACE\llvm-project"
 $env:LLVM_SYS_181_PREFIX="$LLVM_SRC\install"
 $JOBS="4"
 $CMAKE_BUILD_TYPE="MinSizeRel"
+$LLVM_PROJECTS="clang;clang-tools-extra;compiler-rt;libc;lld;polly"
 
 git clone --recursive --branch "release/$LLVM_VER" `
     "https://github.com/llvm/llvm-project" "$LLVM_SRC"
@@ -65,7 +66,7 @@ cd "$LLVM_SRC"
 cmake `
     -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" `
     -DCMAKE_INSTALL_PREFIX="$env:LLVM_SYS_181_PREFIX" `
-    -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt;libc;lld;polly" `
+    -DLLVM_ENABLE_PROJECTS="$LLVM_PROJECTS" `
     -DLLVM_TARGETS_TO_BUILD="X86" `
     -DLLVM_LIT_TOOLS="C:\Program Files (x86)\GnuWin32" `
     -DLLVM_BUILD_TOOLS=ON `
@@ -77,17 +78,28 @@ cmake --build "$LLVM_SRC\build" -j "$JOBS" --config "$CMAKE_BUILD_TYPE"
 
 #   Perform LLVM install manually
 md "$env:LLVM_SYS_181_PREFIX" -ea 0
+md "$env:LLVM_SYS_181_PREFIX\bin" -ea 0
+md "$env:LLVM_SYS_181_PREFIX\include" -ea 0
+md "$env:LLVM_SYS_181_PREFIX\lib" -ea 0
+md "$env:LLVM_SYS_181_PREFIX\share" -ea 0
 cp "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\libllvm-c.args" "$env:LLVM_SYS_181_PREFIX"
 cp "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\libllvm-c.exports" "$env:LLVM_SYS_181_PREFIX"
-cp -r "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\bin" "$env:LLVM_SYS_181_PREFIX"
-cp -r "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib" "$env:LLVM_SYS_181_PREFIX"
-cp -r "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\clang\$LLVM_VER_MAJOR\include" `
-    "$env:LLVM_SYS_181_PREFIX"
-cp -r "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\clang\$LLVM_VER_MAJOR\lib" `
-    "$env:LLVM_SYS_181_PREFIX"
-cp -r "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\clang\$LLVM_VER_MAJOR\share" `
-    "$env:LLVM_SYS_181_PREFIX"
-cp -r "$LLVM_SRC\build\include" "$env:LLVM_SYS_181_PREFIX"
+robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\bin" "$env:LLVM_SYS_181_PREFIX\bin"
+robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib" "$env:LLVM_SYS_181_PREFIX\lib"
+robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\clang\$LLVM_VER_MAJOR\include" `
+    "$env:LLVM_SYS_181_PREFIX\include"
+robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\clang\$LLVM_VER_MAJOR\lib" `
+    "$env:LLVM_SYS_181_PREFIX\lib"
+robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\clang\$LLVM_VER_MAJOR\share" `
+    "$env:LLVM_SYS_181_PREFIX\share"
+robocopy /e /v /xn "$LLVM_SRC\build\include" "$env:LLVM_SYS_181_PREFIX\include"
+robocopy /e /v /xn "$LLVM_SRC\llvm\include" "$env:LLVM_SYS_181_PREFIX\include"
+foreach ( $project in $LLVM_PROJECTS.split(";") ) {
+    $project_dir="$LLVM_SRC\$project\include"
+    if ( Test-Path -Path "$project_dir" ) {
+        robocopy /e /v /xn "$project_dir" "$env:LLVM_SYS_181_PREFIX\include"
+    }
+}
 $env:PATH="$env:LLVM_SYS_181_PREFIX\bin;$env:PATH"
 
 #   Setup rust
