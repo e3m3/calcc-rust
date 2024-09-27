@@ -19,7 +19,7 @@ Author/Maintainer:  Giordano Salvador <73959795+e3m3@users.noreply.github.com>
 
 Learning [Rust][1] [[1]] by implementing the calc langauge using the [llvm-sys][2] [[2]] crate.
 Implements the calc language, inspired by the [C++][3] [[3]] implementation presented by
-    Macke and Kwan in [[4]] and [[5]].
+    Nacke and Kwan in [[4]] and [[5]].
 
 Accepted factors in the grammar have been extended for convenience (see `src/{lex,parse}.rs`
     and `tests/lit-tests/`).
