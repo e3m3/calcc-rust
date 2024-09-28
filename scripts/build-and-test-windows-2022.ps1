@@ -86,13 +86,10 @@ cp "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\libllvm-c.args" "$env:LLVM_SYS_181_PREFIX"
 cp "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\libllvm-c.exports" "$env:LLVM_SYS_181_PREFIX"
 robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\bin" "$env:LLVM_SYS_181_PREFIX\bin"
 robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib" "$env:LLVM_SYS_181_PREFIX\lib"
-robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\clang\$LLVM_VER_MAJOR\include" `
-    "$env:LLVM_SYS_181_PREFIX\include"
 robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\clang\$LLVM_VER_MAJOR\lib" `
     "$env:LLVM_SYS_181_PREFIX\lib"
 robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\clang\$LLVM_VER_MAJOR\share" `
     "$env:LLVM_SYS_181_PREFIX\share"
-robocopy /e /v /xn "$LLVM_SRC\build\include" "$env:LLVM_SYS_181_PREFIX\include"
 robocopy /e /v /xn "$LLVM_SRC\llvm\include" "$env:LLVM_SYS_181_PREFIX\include"
 foreach ( $project in $LLVM_PROJECTS.split(";") ) {
     $project_dir="$LLVM_SRC\$project\include"
