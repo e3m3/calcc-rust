@@ -84,6 +84,8 @@ md "$env:LLVM_SYS_181_PREFIX\lib" -ea 0
 md "$env:LLVM_SYS_181_PREFIX\share" -ea 0
 cp "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\libllvm-c.args" "$env:LLVM_SYS_181_PREFIX"
 cp "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\libllvm-c.exports" "$env:LLVM_SYS_181_PREFIX"
+robocopy /e /v /xn "$LLVM_SRC\build\include" "$env:LLVM_SYS_181_PREFIX\include"
+robocopy /e /v /xn "$LLVM_SRC\build\lib" "$env:LLVM_SYS_181_PREFIX\lib"
 robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\bin" "$env:LLVM_SYS_181_PREFIX\bin"
 robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib" "$env:LLVM_SYS_181_PREFIX\lib"
 robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\clang\$LLVM_VER_MAJOR\lib" `
