@@ -88,15 +88,17 @@ robocopy /e /v /xn "$LLVM_SRC\build\include" "$env:LLVM_SYS_181_PREFIX\include"
 robocopy /e /v /xn "$LLVM_SRC\build\lib" "$env:LLVM_SYS_181_PREFIX\lib"
 robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\bin" "$env:LLVM_SYS_181_PREFIX\bin"
 robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib" "$env:LLVM_SYS_181_PREFIX\lib"
+robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\$CMAKE_BUILD_TYPE" `
+    "$env:LLVM_SYS_181_PREFIX\lib"
 robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\clang\$LLVM_VER_MAJOR\lib" `
     "$env:LLVM_SYS_181_PREFIX\lib"
 robocopy /e /v /xn "$LLVM_SRC\build\$CMAKE_BUILD_TYPE\lib\clang\$LLVM_VER_MAJOR\share" `
     "$env:LLVM_SYS_181_PREFIX\share"
 robocopy /e /v /xn "$LLVM_SRC\llvm\include" "$env:LLVM_SYS_181_PREFIX\include"
 foreach ( $project in $LLVM_PROJECTS.split(";") ) {
-    $project_dir="$LLVM_SRC\$project\include"
-    if ( Test-Path -Path "$project_dir" ) {
-        robocopy /e /v /xn "$project_dir" "$env:LLVM_SYS_181_PREFIX\include"
+    $project_dir="$LLVM_SRC\$project"
+    if ( Test-Path -Path "$project_dir\include" ) {
+        robocopy /e /v /xn "$project_dir\include" "$env:LLVM_SYS_181_PREFIX\include"
     }
 }
 $env:PATH="$env:LLVM_SYS_181_PREFIX\bin;$env:PATH"
